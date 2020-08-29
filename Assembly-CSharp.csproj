@@ -201,6 +201,7 @@
     <Compile Include="Assets\HTC.UnityPlugin\ViveInputUtility\Scripts\ViveRole\ViveRoleProperty.cs" />
     <Compile Include="Assets\HTC.UnityPlugin\ViveInputUtility\Scripts\ViveRole\ViveRoleSetter.cs" />
     <Compile Include="Assets\Scripts\ButtonEvents.cs" />
+    <Compile Include="Assets\Scripts\ChooseCar.cs" />
     <None Include="Assets\HTC.UnityPlugin\ViveInputUtility\changelog.txt" />
     <None Include="Assets\HTC.UnityPlugin\ViveInputUtility\Resources\Unlit-AlphaWithFade.shader" />
     <Reference Include="UnityEngine">
