@@ -10,6 +10,7 @@ public class Control : MonoBehaviour
     public SteamVR_Action_Boolean side;
     public SteamVR_Action_Boolean menu;
     public SteamVR_Action_Pose pose;
+    public SteamVR_Action_Vector2 TouchAxis;
 
     public Ray ray;
     public RaycastHit hit;
@@ -22,21 +23,15 @@ public class Control : MonoBehaviour
         return grabAction.stateUp;
     }
 
-    public bool Acceler()
+    public bool getSide()
     {
-        //return grabAction.GetState(handType);
-        return grabAction.stateUp;
+        return side.state;
     }
-
-    //public bool GoBack()
-    //{
-    //    return side.state;
-    //}
 
     public bool getmenu()
     {
         return menu.stateUp;
     }
 
-
+    
 }
