@@ -211,7 +211,6 @@
     <Compile Include="Assets\Scripts\RadialMenu.cs" />
     <Compile Include="Assets\Scripts\RadialSection.cs" />
     <Compile Include="Assets\Scripts\SetTexture.cs" />
-    <Compile Include="Assets\Scripts\VRUIinput.cs" />
     <Compile Include="Assets\Scripts\carevent.cs" />
     <Compile Include="Assets\VRKeys\Scripts\BackspaceKey.cs" />
     <Compile Include="Assets\VRKeys\Scripts\CancelKey.cs" />
@@ -231,6 +230,9 @@
     <Compile Include="Assets\VRKeys\Scripts\Placement.cs" />
     <Compile Include="Assets\VRKeys\Scripts\ShiftKey.cs" />
     <Compile Include="Assets\VRKeys\Scripts\SpaceKey.cs" />
+    <Compile Include="Assets\Youe++\Gaze UI\Exemple\Scripts\AnimatorUtility.cs" />
+    <Compile Include="Assets\Youe++\Gaze UI\Exemple\Scripts\SmoothMouseLook.cs" />
+    <Compile Include="Assets\Youe++\Gaze UI\Scripts\EyeRaycaster.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
