@@ -33,24 +33,25 @@ public class CarController : MonoBehaviour
     {
         transform.GetComponent<Rigidbody>().AddForce(transform.forward * maxForce);
         //移動
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow) || right.GetComponent<Control>().accelator() > 0)
         {
             direction = 1;
             if (transform.GetComponent<Rigidbody>().velocity.magnitude < maxspeed)
             {
-                maxForce = 15000;
+                maxForce = 15000 * right.GetComponent<Control>().accelator();
+                print(right.GetComponent<Control>().accelator());
             }
             else
             {
                 transform.GetComponent<Rigidbody>().velocity = transform.forward * direction * maxspeed;
             }
         }
-        else if (Input.GetKey(KeyCode.DownArrow) || left.GetComponent<Control>().getSide())
+        else if (Input.GetKey(KeyCode.DownArrow) || left.GetComponent<Control>().goback() > 0)
         {
             direction = -1;
             if (transform.GetComponent<Rigidbody>().velocity.magnitude < maxspeed)
             {
-                maxForce = -15000;
+                maxForce = -15000 * left.GetComponent<Control>().goback();
             }
             else
             {
@@ -65,15 +66,17 @@ public class CarController : MonoBehaviour
         }
 
         //轉彎
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow) || right.transform.localRotation.y > 0)
         {
-            //Debug.Log("右轉");
-            transform.Rotate(0, 0.75f * direction, 0);
+            Debug.Log("右轉");
+            float angle = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+            transform.Rotate(0, angle * direction, 0);
         }
-        else if (Input.GetKey(KeyCode.LeftArrow))
+        else if (Input.GetKey(KeyCode.LeftArrow) || right.transform.localRotation.y < 0)
         {
-            //Debug.Log("左轉");
-            transform.Rotate(0, -0.75f * direction, 0);
+            Debug.Log("左轉");
+            float angle = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+            transform.Rotate(0, angle * direction, 0);
         }
     }
 

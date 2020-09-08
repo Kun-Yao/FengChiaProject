@@ -1,7 +1,7 @@
 ﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 using UnityEngine;
 using System.Collections;
-
+using UnityEngine.UI;
 namespace Valve.VR.Extras
 {
     public class SteamVR_LaserPointer : MonoBehaviour
@@ -132,7 +132,7 @@ namespace Valve.VR.Extras
                 dist = hit.distance;
             }
 
-            if (bHit && interactWithUI.GetStateUp(pose.inputSource))
+            if (bHit /*&& interactWithUI.GetStateUp(pose.inputSource)*/)
             {
                 PointerEventArgs argsClick = new PointerEventArgs();
                 argsClick.fromInputSource = pose.inputSource;

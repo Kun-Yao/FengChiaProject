@@ -5,22 +5,30 @@ using Valve.VR;
 
 public class Control : MonoBehaviour
 {
-    public SteamVR_Input_Sources handType;
-    public SteamVR_Action_Boolean grabAction;
+    public SteamVR_Action_Boolean RTrig;
+    public SteamVR_Action_Boolean LTrig;
     public SteamVR_Action_Boolean side;
     public SteamVR_Action_Boolean menu;
     public SteamVR_Action_Pose pose;
     public SteamVR_Action_Vector2 TouchAxis;
+    public SteamVR_Action_Single RGas;
+    public SteamVR_Action_Single LGas;
 
     public Ray ray;
     public RaycastHit hit;
     public bool bHit;
 
-    public bool GetGrab()
+    public bool GetRGrab()
     {
         ray = new Ray(transform.position, transform.forward);
         bHit = Physics.Raycast(ray, out hit);
-        return grabAction.stateUp;
+        return RTrig.stateUp;
+    }
+    public bool GetLGrab()
+    {
+        ray = new Ray(transform.position, transform.forward);
+        bHit = Physics.Raycast(ray, out hit);
+        return LTrig.stateUp;
     }
 
     public bool getSide()
@@ -33,5 +41,13 @@ public class Control : MonoBehaviour
         return menu.stateUp;
     }
 
-    
+    public float accelator()
+    {
+        return RGas.axis;
+    }
+
+    public float goback()
+    {
+        return LGas.axis;
+    }
 }

@@ -42,7 +42,7 @@ public class BuildBlock : MonoBehaviour
         GameObject block;
         Vector3 oldPos;
 
-        if (Input.GetMouseButtonDown(0) || right.GetComponent<Control>().GetGrab())
+        if (Input.GetMouseButtonDown(0) || right.GetComponent<Control>().GetRGrab())
         {
             
             /*if (EventSystem.current.IsPointerOverGameObject())
@@ -95,7 +95,7 @@ public class BuildBlock : MonoBehaviour
                 }
             //}
         }
-        if (Input.GetMouseButtonDown(1) || left.GetComponent<Control>().GetGrab())
+        if (Input.GetMouseButtonDown(1) || left.GetComponent<Control>().GetLGrab())
         {
 
             /*if (EventSystem.current.IsPointerOverGameObject())
@@ -105,7 +105,6 @@ public class BuildBlock : MonoBehaviour
                 //ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (left.GetComponent<Control>().bHit)
                 {
-
                     block = left.GetComponent<Control>().hit.collider.gameObject;
                     if (block != blocks[0])
                         Destroy(block);
