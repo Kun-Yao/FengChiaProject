@@ -18,12 +18,24 @@ public class ButtonEvents : MonoBehaviour
             if (right.GetComponent<Control>().bHit)
             {
                 currentObject = right.GetComponent<Control>().hit.collider.gameObject;
-                string tag = currentObject.tag;
-                if (tag == "scene")
+                if (currentObject.CompareTag("scene"))
                 {
-                    currentObject.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-                    print("Scene " + SceneIndex);
-                    SceneManager.LoadScene(SceneIndex);
+                    if (currentObject.name.CompareTo("Home") == 0)
+                    {
+                        SceneManager.LoadScene(0);
+                    }
+                    else if (currentObject.name.CompareTo("Garage") == 0)
+                    {
+                        SceneManager.LoadScene(1);
+                    }
+                    else if (currentObject.name.CompareTo("Game") == 0)
+                    {
+                        SceneManager.LoadScene(2);
+                    }
+                    else if (currentObject.name.CompareTo("Go") == 0)
+                    {
+                        SceneManager.LoadScene(3);
+                    }
                 }
             }
         }
