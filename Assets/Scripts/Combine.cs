@@ -1,0 +1,132 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.UI;
+using System.IO;
+
+
+[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer))]
+
+public class Combine : MonoBehaviour
+{
+
+    public GameObject engine;
+    private GameObject third;
+    private string name;
+    private string path, ass;
+    private List<string> carList = new List<string>();
+    private string test;
+    private GameObject CameraRig;
+
+    void Awake()
+    {
+        StreamReader sr = new StreamReader("Assets/Resources/CarList/list.txt");
+        test = sr.ReadLine();
+        while (test != null)
+        {
+            Debug.Log(test);
+            carList.Add(test);
+            test = sr.ReadLine();
+        }
+        sr.Close();
+
+        CameraRig = (GameObject)Resources.Load("[CameraRig]");
+        if(CameraRig == null)
+        {
+            print("No CareraRig");
+        }
+    }
+
+    public void combine()
+    {
+
+        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+
+        if (save())
+        {
+            int i = 0;
+            while (i < meshFilters.Length)
+            {
+                combine[i].mesh = meshFilters[i].sharedMesh;
+                combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+                meshFilters[i].gameObject.SetActive(false);
+
+                i++;
+            }
+            transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            transform.gameObject.SetActive(true);
+
+            foreach (Transform child in transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            giveComponent(CameraRig);
+            Mesh msh = engine.GetComponent<MeshFilter>().sharedMesh;
+            AssetDatabase.CreateAsset(msh, ass);
+            AssetDatabase.SaveAssets();
+            PrefabUtility.SaveAsPrefabAsset(engine, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+    }
+
+    //確認名稱是否重複
+    private bool save()
+    {
+        name = "car8";
+
+        bool isActive = true;
+        foreach (string car in carList)
+        {
+            if (car.Equals(name))
+            {
+                isActive = false;
+                break;
+            }
+        }
+
+        if (isActive)
+        {
+
+            path = "Assets/Resources/Prefabs/" + name + ".Prefab";
+            ass = "Assets/Resources/Models/" + name + ".asset";
+            StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
+            sw.WriteLine(name);
+            sw.Close();
+            return true;
+        }
+        return false;
+    }
+
+    public void giveComponent(GameObject camera)
+    {
+
+        if (engine == null)
+        {
+            Debug.Log("null engine");
+        }
+        Debug.Log("scale = " + engine.transform.lossyScale);
+        BoxCollider bc = this.GetComponent<BoxCollider>();
+        BuildBlock bb = this.GetComponent<BuildBlock>();
+
+        bc.enabled = false;
+        DestroyImmediate(bc);
+        DestroyImmediate(bb);
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+
+        engine.AddComponent<Rigidbody>();
+        Rigidbody rb = engine.GetComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+
+        engine.AddComponent<BoxCollider>().enabled = false;
+        engine.AddComponent<CarController>().enabled = false;
+        GameObject t = Instantiate(camera, engine.transform);
+        //選好賽車再啟動所有component
+    }
+}

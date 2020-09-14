@@ -89,6 +89,14 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/TouchPad",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/default/in/Click",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

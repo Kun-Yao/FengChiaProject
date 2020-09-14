@@ -7,6 +7,8 @@ TagManager:
   - Cylinder
   - scene
   - ground
+  - Block
+  - save
   layers:
   - Default
   - TransparentFX

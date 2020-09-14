@@ -16,6 +16,8 @@ public class BuildBlock : MonoBehaviour
     public GameObject left;
     public GameObject right;
 
+    public static GameObject currentObject;
+
     void Awake()
     {
         newBlock = blocks[1];
@@ -44,15 +46,11 @@ public class BuildBlock : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) || right.GetComponent<Control>().GetRGrab())
         {
-            
-            /*if (EventSystem.current.IsPointerOverGameObject())
-                Debug.Log("Clicked on the UI");
-            else
-            {*/
-                //ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (right.GetComponent<Control>().bHit)
+            if (right.GetComponent<Control>().bHit)
+            {
+                currentObject = right.GetComponent<Control>().hit.collider.gameObject;
+                if (currentObject.CompareTag("Block") || currentObject.CompareTag("Cylinder"))
                 {
-                    
                     oldPos = right.GetComponent<Control>().hit.collider.gameObject.transform.position;
                     blockPos = right.GetComponent<Control>().hit.point + right.GetComponent<Control>().hit.normal / 2.0f;
 
@@ -62,7 +60,7 @@ public class BuildBlock : MonoBehaviour
 
                     if (newBlock == blocks[2])
                     {
-                    
+
                         if (blockPos.x != oldPos.x)
                         {
                             if (blockPos.x < 0)
@@ -93,23 +91,20 @@ public class BuildBlock : MonoBehaviour
                         block = Instantiate(newBlock, blockPos, Quaternion.identity);
                     block.transform.parent = this.transform;
                 }
-            //}
+            }
         }
         if (Input.GetMouseButtonDown(1) || left.GetComponent<Control>().GetLGrab())
         {
-
-            /*if (EventSystem.current.IsPointerOverGameObject())
-                Debug.Log("Clicked on the UI");
-            else
-            {*/
-                //ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (left.GetComponent<Control>().bHit)
+            if (left.GetComponent<Control>().bHit)
+            {
+                currentObject = left.GetComponent<Control>().hit.collider.gameObject;
+                if (currentObject.CompareTag("Block") || currentObject.CompareTag("Cylinder"))
                 {
                     block = left.GetComponent<Control>().hit.collider.gameObject;
                     if (block != blocks[0])
                         Destroy(block);
                 }
-            //}
+            }
         }
     }
 }

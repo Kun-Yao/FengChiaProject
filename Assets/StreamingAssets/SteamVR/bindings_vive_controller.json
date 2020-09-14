@@ -179,13 +179,10 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/default/in/selection"
+                     "output" : "/actions/default/in/click"
                   },
                   "position" : {
-                     "output" : "/actions/default/in/menupos"
-                  },
-                  "touch" : {
-                     "output" : "/actions/default/in/actionmenu"
+                     "output" : "/actions/default/in/touchpad"
                   }
                },
                "mode" : "trackpad",

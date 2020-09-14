@@ -5,11 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class ButtonEvents : MonoBehaviour
 {
-    public int SceneIndex;
+    
     public GameObject right;
+    GameObject engine;
 
     public static GameObject currentObject;
-    
+
+    private void Start()
+    {
+        engine = GameObject.Find("Engine");
+    }
 
     private void Update()
     {
@@ -36,6 +41,11 @@ public class ButtonEvents : MonoBehaviour
                     {
                         SceneManager.LoadScene(3);
                     }
+                }
+                else if (currentObject.CompareTag("save"))
+                {
+                    if(engine != null)
+                        engine.GetComponent<Combine>().combine();
                 }
             }
         }
