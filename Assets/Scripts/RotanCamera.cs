@@ -9,6 +9,7 @@ public class RotanCamera : MonoBehaviour
     public SteamVR_Action_Boolean press = null;
     GameObject engine;
     GameObject canvas;
+    GameObject arrow;
 
     int AxisX;
 
@@ -17,6 +18,7 @@ public class RotanCamera : MonoBehaviour
         touchPos.onAxis += Position;
         engine = GameObject.Find("Engine");
         canvas = GameObject.Find("Canvas");
+        arrow = GameObject.Find("Waypoint Arrow");
         //press.onStateUp += PressRelease;
     }
 
@@ -32,11 +34,13 @@ public class RotanCamera : MonoBehaviour
         {
             transform.RotateAround(engine.transform.position, Vector3.up, -100 * Time.deltaTime);
             canvas.transform.RotateAround(engine.transform.position, Vector3.up, -100 * Time.deltaTime);
+            arrow.transform.Rotate(Vector3.right, 100 * Time.deltaTime);
         }
         else
         {
             transform.RotateAround(engine.transform.position, Vector3.up, 100 * Time.deltaTime);
             canvas.transform.RotateAround(engine.transform.position, Vector3.up, 100 * Time.deltaTime);
+            arrow.transform.Rotate(Vector3.right, -100 * Time.deltaTime);
         }
     }
 

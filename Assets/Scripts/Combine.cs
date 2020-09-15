@@ -78,13 +78,14 @@ public class Combine : MonoBehaviour
     //確認名稱是否重複
     private bool save()
     {
-        name = "car8";
+        name = "car14";
 
         bool isActive = true;
         foreach (string car in carList)
         {
             if (car.Equals(name))
             {
+                print("same");
                 isActive = false;
                 break;
             }
@@ -95,6 +96,7 @@ public class Combine : MonoBehaviour
 
             path = "Assets/Resources/Prefabs/" + name + ".Prefab";
             ass = "Assets/Resources/Models/" + name + ".asset";
+            carList.Add(name);
             StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
             sw.WriteLine(name);
             sw.Close();
@@ -119,14 +121,23 @@ public class Combine : MonoBehaviour
         DestroyImmediate(bb);
         Mesh mesh = GetComponent<MeshFilter>().mesh;
 
+        engine.AddComponent<BoxCollider>();
+        BoxCollider box = engine.GetComponent<BoxCollider>();
+        box.enabled = false;
+        engine.AddComponent<CarController>();
+        CarController car = engine.GetComponent<CarController>();
+        car.enabled = false;
+
         engine.AddComponent<Rigidbody>();
         Rigidbody rb = engine.GetComponent<Rigidbody>();
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+        rb.centerOfMass = box.center - new Vector3(0, box.center.y/2, 0);
+        print(rb.centerOfMass);
 
-        engine.AddComponent<BoxCollider>().enabled = false;
-        engine.AddComponent<CarController>().enabled = false;
-        GameObject t = Instantiate(camera, engine.transform);
+        Vector3 PosOfCam = box.center + new Vector3(0, box.size.y / 2 + 2, -(box.size.z / 2 + 2));
+        GameObject t = Instantiate(camera, PosOfCam, Quaternion.Euler(0, 0, 0), engine.transform);
+        t.SetActive(false);
         //選好賽車再啟動所有component
     }
 }
