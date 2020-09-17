@@ -13,6 +13,8 @@ public class ChooseCar : MonoBehaviour
     Vector3 PosOfCar;
     int AxisY;
 
+    GameObject CarRing;
+
     private void Awake()
     {
         touchPos.onAxis += Position;
@@ -21,23 +23,23 @@ public class ChooseCar : MonoBehaviour
 
     void Start()
     {
-        ta = Resources.Load<TextAsset>("carList/list");
+        ta = Resources.Load<TextAsset>("CarList/list");
         vs = ta.text.Split('\n');
+        CarRing = GameObject.Find("Car Ring");
 
         //MAC要把這個迴圈註解
         for (int i = 0; i < vs.Length - 1; i++)
         {
             vs[i] = vs[i].Substring(0, vs[i].Length - 1);
         }
-
-        for (int i = 0; i < vs.Length - 1; i += 4)
+        
+        for (int i = 0; i < vs.Length - 1; i++)
         {
-            for (int j = 0; j < 4; j++)
-            {
-                //車子的位置(待設定)
-                PosOfCar = new Vector3(0, 0, 10);
-                Instantiate(Resources.Load(vs[i]));
-            }
+            print(i);
+            //車子的位置(待設定)
+            PosOfCar = new Vector3(0, 0, 10);
+            Instantiate(Resources.Load("Prefabs/" + vs[i]), CarRing.transform);
+            print(vs[i]);
 
         }
     }

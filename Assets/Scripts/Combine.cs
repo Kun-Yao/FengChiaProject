@@ -26,7 +26,6 @@ public class Combine : MonoBehaviour
         test = sr.ReadLine();
         while (test != null)
         {
-            Debug.Log(test);
             carList.Add(test);
             test = sr.ReadLine();
         }
@@ -78,7 +77,7 @@ public class Combine : MonoBehaviour
     //確認名稱是否重複
     private bool save()
     {
-        name = "car14";
+        name = "car15";
 
         bool isActive = true;
         foreach (string car in carList)

@@ -8,6 +8,7 @@ public class ButtonEvents : MonoBehaviour
     
     public GameObject right;
     GameObject engine;
+    GameObject target;
 
     public static GameObject currentObject;
 
@@ -39,6 +40,7 @@ public class ButtonEvents : MonoBehaviour
                     }
                     else if (currentObject.name.CompareTo("Go") == 0)
                     {
+                        DontDestroyOnLoad(target);
                         SceneManager.LoadScene(3);
                     }
                 }

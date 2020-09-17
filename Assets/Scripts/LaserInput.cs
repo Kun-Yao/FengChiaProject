@@ -24,10 +24,7 @@ public class LaserInput : MonoBehaviour
         ray = new Ray(transform.position, transform.forward);
         bHit = Physics.Raycast(ray, out hit);
 
-        if (bHit)
-        {
-            print("AAA");
-        }
+        
 
         //RaycastHit[] hits;
         //hits = Physics.RaycastAll(transform.position, transform.forward, 100.0f);
