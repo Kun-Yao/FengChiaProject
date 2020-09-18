@@ -13,8 +13,6 @@ public class ChooseCar : MonoBehaviour
     Vector3 PosOfCar;
     int AxisY;
 
-    GameObject CarRing;
-
     private void Awake()
     {
         touchPos.onAxis += Position;
@@ -25,22 +23,27 @@ public class ChooseCar : MonoBehaviour
     {
         ta = Resources.Load<TextAsset>("CarList/list");
         vs = ta.text.Split('\n');
-        CarRing = GameObject.Find("Car Ring");
+        PosOfCar = transform.position + new Vector3(-5, 5, 0);
 
-        //MAC要把這個迴圈註解
+        //刪除字串後面的enter，MAC要把這個迴圈註解
         for (int i = 0; i < vs.Length - 1; i++)
         {
             vs[i] = vs[i].Substring(0, vs[i].Length - 1);
         }
         
-        for (int i = 0; i < vs.Length - 1; i++)
+        //顯示所有的車子
+        for (int i = 0; i < vs.Length - 1; i += 4 )
         {
-            print(i);
-            //車子的位置(待設定)
-            PosOfCar = new Vector3(0, 0, 10);
-            Instantiate(Resources.Load("Prefabs/" + vs[i]), CarRing.transform);
-            print(vs[i]);
-
+            //一列四台
+            for(int j = 0; j < 4; j++)
+            {
+                Instantiate(Resources.Load("Prefabs/" + vs[i]), PosOfCar, Quaternion.Euler(0, 0, 0), transform);
+                print(vs[i]);
+                //車子的X軸(待設定)
+                PosOfCar += new Vector3(2.5f, 0, 0);
+            }
+            //車子的Y軸(待設定)
+            PosOfCar += new Vector3(0, 2.5f, 0);
         }
     }
 
@@ -50,7 +53,7 @@ public class ChooseCar : MonoBehaviour
         press.onStateUp -= PressRelease;
     }
 
-    //利用觸控板移動list
+    //按下觸控板移動list(未完成)
     private void Position(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta)
     {
         if(axis.y > 0)
