@@ -17,6 +17,7 @@ public class ChooseCar : MonoBehaviour
     Ray ray;
     RaycastHit hit;
     GameObject currentObject;
+    private GameManager gameManager;
 
     private void Awake()
     {
@@ -96,7 +97,7 @@ public class ChooseCar : MonoBehaviour
             {
                 currentObject = right.GetComponent<Control>().hit.collider.gameObject;
                 string[] split = currentObject.name.Split('(');
-                //donotdestroy(split[0]);
+                gameManager.setName(split[0]);
                 print(currentObject.name);
 
             }

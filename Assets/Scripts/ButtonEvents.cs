@@ -40,7 +40,6 @@ public class ButtonEvents : MonoBehaviour
                     }
                     else if (currentObject.name.CompareTo("Go") == 0)
                     {
-                        DontDestroyOnLoad(target);
                         SceneManager.LoadScene(3);
                     }
                 }
