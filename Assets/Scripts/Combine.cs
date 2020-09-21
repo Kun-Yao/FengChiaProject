@@ -77,7 +77,7 @@ public class Combine : MonoBehaviour
     //確認名稱是否重複
     private bool save()
     {
-        name = "car15";
+        name = "car16";
 
         bool isActive = true;
         foreach (string car in carList)
@@ -122,7 +122,7 @@ public class Combine : MonoBehaviour
 
         engine.AddComponent<BoxCollider>();
         BoxCollider box = engine.GetComponent<BoxCollider>();
-        box.enabled = false;
+
         engine.AddComponent<CarController>();
         CarController car = engine.GetComponent<CarController>();
         car.enabled = false;
@@ -136,6 +136,7 @@ public class Combine : MonoBehaviour
 
         Vector3 PosOfCam = box.center + new Vector3(0, box.size.y / 2 + 2, -(box.size.z / 2 + 2));
         GameObject t = Instantiate(camera, PosOfCam, Quaternion.Euler(0, 0, 0), engine.transform);
+        t.transform.SetAsFirstSibling();
         t.SetActive(false);
         //選好賽車再啟動所有component
     }

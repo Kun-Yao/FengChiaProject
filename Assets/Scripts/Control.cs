@@ -33,7 +33,7 @@ public class Control : MonoBehaviour
 
     public bool getSide()
     {
-        return side.state;
+        return side.stateUp;
     }
 
     public bool getmenu()

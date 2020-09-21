@@ -21,11 +21,12 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.R) || right.GetComponent<Control>().getSide())
         {
             Debug.Log("break");
-            carevent.ResetCar(this.gameObject, checkPoint);
             Debug.Log(gameObject.name);
+            carevent.ResetCar(this.gameObject.name, checkPoint);
+
         }
     }
 
@@ -82,19 +83,19 @@ public class CarController : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Debug.Log("break");
-            carevent.ResetCar(this.gameObject, checkPoint);
-            Debug.Log(gameObject.name);
-        }
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    Debug.Log("break");
+        //    Debug.Log(gameObject.name + " s");
+        //    carevent.ResetCar(this.gameObject.name, checkPoint);
+        //}
         if (collision.gameObject.CompareTag("ground"))
         {
             if (Mathf.Abs(transform.rotation.x) > 45 || Mathf.Abs(transform.rotation.z) > 45 || Input.GetKey(KeyCode.R))
             {
                 Debug.Log("break");
-                carevent.ResetCar(this.gameObject, checkPoint);
                 Debug.Log(gameObject.name);
+                carevent.ResetCar(this.gameObject.name, checkPoint);
             }
             else
             {
@@ -107,12 +108,13 @@ public class CarController : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Debug.Log("break");
-            carevent.ResetCar(this.gameObject, checkPoint);
-            Debug.Log(gameObject.name);
-        }
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    Debug.Log("break");
+        //    Debug.Log(gameObject.name + " e");
+        //    carevent.ResetCar(this.gameObject.name, checkPoint);
+            
+        //}
         if (collision.gameObject.CompareTag("ground"))
         {
             Debug.Log("exit ground");
