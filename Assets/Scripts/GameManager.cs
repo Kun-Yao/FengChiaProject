@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     static GameManager instance;
 
-    private string CarName;
+    public string CarName;
     private Vector3[] coordinate = { new Vector3(-15, 0, 0), new Vector3(-10, 0, 0), new Vector3(-5, 0, 0), new Vector3(0, 0, 0), new Vector3(5, 0, 0), new Vector3(10, 0, 0) };
     private bool[] isEmpty = new bool[6];
     // Start is called before the first frame update
@@ -17,9 +17,9 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(this);
         }
-        else if(instance != this)
+        else if(this != instance)
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 

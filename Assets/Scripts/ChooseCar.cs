@@ -17,12 +17,13 @@ public class ChooseCar : MonoBehaviour
     Ray ray;
     RaycastHit hit;
     GameObject currentObject;
-    private GameManager gameManager;
+    GameManager gameManager;
 
     private void Awake()
     {
         touchPos.onAxis += Position;
         press.onState += PressRelease;
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     private void OnDestroy()
@@ -93,13 +94,14 @@ public class ChooseCar : MonoBehaviour
     {
         if (right.GetComponent<Control>().GetRGrab())
         {
-            if (right.GetComponent<Control>().bHit)
+            currentObject = right.GetComponent<Control>().hit.collider.gameObject;
+            if (right.GetComponent<Control>().bHit && !currentObject.CompareTag("scene"))
             {
-                currentObject = right.GetComponent<Control>().hit.collider.gameObject;
+                
                 string[] split = currentObject.name.Split('(');
                 print(split[0]);
-                gameManager.setName(split[0]);
-                print(currentObject.name);
+                gameManager.CarName = split[0];
+                print(gameManager.getName());
 
             }
         }
