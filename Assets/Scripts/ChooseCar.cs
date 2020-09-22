@@ -97,6 +97,7 @@ public class ChooseCar : MonoBehaviour
             {
                 currentObject = right.GetComponent<Control>().hit.collider.gameObject;
                 string[] split = currentObject.name.Split('(');
+                print(split[0]);
                 gameManager.setName(split[0]);
                 print(currentObject.name);
 

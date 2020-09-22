@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(this);
         }
+        else if(instance != this)
+        {
+            Destroy(this);
+        }
     }
 
     public void setName(string Name)
