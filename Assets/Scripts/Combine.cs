@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using System.IO;
-
+using VRKeys;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -19,6 +20,7 @@ public class Combine : MonoBehaviour
     private List<string> carList = new List<string>();
     private string test;
     private GameObject CameraRig;
+    private GameObject demo;
 
     void Awake()
     {
@@ -36,6 +38,7 @@ public class Combine : MonoBehaviour
         {
             print("No CareraRig");
         }
+        demo = GameObject.Find("DemoScene");
     }
 
     public void combine()
@@ -71,14 +74,13 @@ public class Combine : MonoBehaviour
             PrefabUtility.SaveAsPrefabAsset(engine, path);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            SceneManager.LoadScene(0);
         }
     }
 
     //確認名稱是否重複
     private bool save()
     {
-        name = "car16";
-
         bool isActive = true;
         foreach (string car in carList)
         {
@@ -101,6 +103,8 @@ public class Combine : MonoBehaviour
             sw.Close();
             return true;
         }
+        else
+            demo.GetComponent<DemoScene>();
         return false;
     }
 
@@ -134,10 +138,16 @@ public class Combine : MonoBehaviour
         rb.centerOfMass = box.center - new Vector3(0, box.center.y/2, 0);
         print(rb.centerOfMass);
 
-        Vector3 PosOfCam = box.center + new Vector3(0, box.size.y / 2 + 2, -(box.size.z / 2 + 2));
+        Vector3 PosOfCam = new Vector3(box.size.x / 2, box.size.y / 2, box.size.z / 2) + new Vector3(0, box.size.y / 2 + 0.25f, -(box.size.z / 2 + 2));
         GameObject t = Instantiate(camera, PosOfCam, Quaternion.Euler(0, 0, 0), engine.transform);
         t.transform.SetAsFirstSibling();
         t.SetActive(false);
         //選好賽車再啟動所有component
+    }
+
+    public void SetName(string name)
+    {
+        this.name = name;
+        combine();
     }
 }

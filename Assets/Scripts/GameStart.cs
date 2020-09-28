@@ -5,9 +5,11 @@ using UnityEngine;
 public class GameStart : MonoBehaviour
 {
     GameManager gameManager;
+    GameObject StartLine;
     
     void Awake()
     {
+        StartLine = GameObject.Find("StartLine");
         gameManager = FindObjectOfType<GameManager>();
         print(gameManager.CarName);
         for(int i=0; i<6; i++)
@@ -19,9 +21,13 @@ public class GameStart : MonoBehaviour
         {
             if (gameManager.getEmpty(i) == true)
             {
-                GameObject player = (GameObject)Instantiate(Resources.Load("Prefabs/"+gameManager.CarName), gameManager.getLocation(i), Quaternion.Euler(0, 0, 0));
+                GameObject player = (GameObject)Instantiate(Resources.Load("Prefabs/car14"), StartLine.transform.position, Quaternion.Euler(0, 0, 0));
+                print(i);
+                player.transform.position -= new Vector3(0, 0, player.GetComponent<BoxCollider>().center.z);
+                player.transform.position -= new Vector3(0, 0, player.GetComponent<BoxCollider>().size.z/2 + 1);
                 print(player.name);
-                //player.transform.GetChild(0).gameObject.SetActive(true);
+                this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+                player.transform.GetChild(0).gameObject.SetActive(true);
                 gameManager.setEmpty(i, false);
                 break;
             }

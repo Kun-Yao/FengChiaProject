@@ -13,6 +13,7 @@ public class Control : MonoBehaviour
     public SteamVR_Action_Vector2 TouchAxis;
     public SteamVR_Action_Single RGas;
     public SteamVR_Action_Single LGas;
+    public SteamVR_Action_Boolean Reset;
 
     public Ray ray;
     public RaycastHit hit;
@@ -33,7 +34,7 @@ public class Control : MonoBehaviour
 
     public bool getSide()
     {
-        return side.stateUp;
+        return Reset.stateUp;
     }
 
     public bool getmenu()

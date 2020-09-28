@@ -99,7 +99,6 @@ public class ChooseCar : MonoBehaviour
             {
                 
                 string[] split = currentObject.name.Split('(');
-                print(split[0]);
                 gameManager.CarName = split[0];
                 print(gameManager.getName());
 

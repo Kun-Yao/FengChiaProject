@@ -9,6 +9,8 @@ public class ButtonEvents : MonoBehaviour
     public GameObject right;
     GameObject engine;
     GameObject target;
+    public GameObject demo = null;
+    public GameObject control = null;
 
     public static GameObject currentObject;
 
@@ -45,8 +47,11 @@ public class ButtonEvents : MonoBehaviour
                 }
                 else if (currentObject.CompareTag("save"))
                 {
-                    if(engine != null)
-                        engine.GetComponent<Combine>().combine();
+                    if (engine != null)
+                    {
+                        demo.SetActive(true);
+                        control.SetActive(false);
+                    }
                 }
             }
         }

@@ -21,7 +21,7 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.R)/* || right.GetComponent<Control>().getSide()*/)
+        if (Input.GetKeyUp(KeyCode.R) || right.GetComponent<Control>().getSide())
         {
             Debug.Log("break");
             Debug.Log(gameObject.name);
