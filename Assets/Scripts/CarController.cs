@@ -21,11 +21,12 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.R) || right.GetComponent<Control>().getSide())
+        if (Input.GetKeyUp(KeyCode.R) || right.GetComponent<Control>().setReset())
         {
             Debug.Log("break");
             Debug.Log(gameObject.name);
-            carevent.ResetCar(this.gameObject.name, checkPoint);
+            string[] N = gameObject.name.Split('(');
+            carevent.ResetCar(N[0], checkPoint);
 
         }
     }

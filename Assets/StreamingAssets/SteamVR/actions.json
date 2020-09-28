@@ -73,14 +73,6 @@
       "type": "boolean"
     },
     {
-      "name": "/actions/default/in/RPull",
-      "type": "vector1"
-    },
-    {
-      "name": "/actions/default/in/LPull",
-      "type": "vector1"
-    },
-    {
       "name": "/actions/default/in/Drift",
       "type": "boolean"
     },
@@ -95,6 +87,14 @@
     {
       "name": "/actions/default/in/Click",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/LPull",
+      "type": "vector1"
+    },
+    {
+      "name": "/actions/default/in/RPull",
+      "type": "vector1"
     },
     {
       "name": "/actions/default/out/Haptic",

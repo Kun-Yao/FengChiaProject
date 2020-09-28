@@ -145,22 +145,6 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Single RPull
-        {
-            get
-            {
-                return SteamVR_Actions.default_RPull;
-            }
-        }
-        
-        public virtual SteamVR_Action_Single LPull
-        {
-            get
-            {
-                return SteamVR_Actions.default_LPull;
-            }
-        }
-        
         public virtual SteamVR_Action_Boolean Drift
         {
             get
@@ -190,6 +174,22 @@ namespace Valve.VR
             get
             {
                 return SteamVR_Actions.default_Click;
+            }
+        }
+        
+        public virtual SteamVR_Action_Single LPull
+        {
+            get
+            {
+                return SteamVR_Actions.default_LPull;
+            }
+        }
+        
+        public virtual SteamVR_Action_Single RPull
+        {
+            get
+            {
+                return SteamVR_Actions.default_RPull;
             }
         }
         

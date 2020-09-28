@@ -32,7 +32,7 @@ public class Control : MonoBehaviour
         return LTrig.stateUp;
     }
 
-    public bool getSide()
+    public bool setReset()
     {
         return Reset.stateUp;
     }

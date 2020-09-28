@@ -143,6 +143,9 @@ public class Combine : MonoBehaviour
         t.transform.SetAsFirstSibling();
         t.SetActive(false);
         //選好賽車再啟動所有component
+
+        engine.tag = "Player";
+        //engine.AddComponent<Lap>();
     }
 
     public void SetName(string name)
