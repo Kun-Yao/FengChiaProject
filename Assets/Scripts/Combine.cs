@@ -43,12 +43,14 @@ public class Combine : MonoBehaviour
 
     public void combine()
     {
-
+        StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
+        
         MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
         if (save())
         {
+            sw.WriteLine(name + "a");
             int i = 0;
             while (i < meshFilters.Length)
             {
@@ -58,23 +60,31 @@ public class Combine : MonoBehaviour
 
                 i++;
             }
+            sw.WriteLine(name + "b");
             transform.GetComponent<MeshFilter>().mesh = new Mesh();
             transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
             transform.gameObject.SetActive(true);
-
+            sw.WriteLine(name + "c");
             foreach (Transform child in transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
 
+            
+            sw.WriteLine(name+ "1");
             giveComponent(CameraRig);
+            sw.WriteLine(name + "2");
             Mesh msh = engine.GetComponent<MeshFilter>().sharedMesh;
+            sw.WriteLine(name + "3");
             AssetDatabase.CreateAsset(msh, ass);
+            sw.WriteLine(name + "4");
             AssetDatabase.SaveAssets();
+            sw.WriteLine(name + "5");
             PrefabUtility.SaveAsPrefabAsset(engine, path);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             SceneManager.LoadScene(0);
+            sw.Close();
         }
     }
 

@@ -364,8 +364,8 @@ namespace VRKeys {
 		/// Cancel input and close the keyboard.
 		/// </summary>
 		public void Cancel () {
-			//OnCancel.Invoke ();
-			//Disable ();
+			OnCancel.Invoke ();
+			Disable ();
 		}
 
 		/// <summary>

@@ -26,6 +26,7 @@ namespace VRKeys {
 		public Keyboard keyboard;
 
         public GameObject combine;
+        public GameObject control;
 
 		/// <summary>
 		/// See the following for why this is so convoluted:
@@ -118,7 +119,12 @@ namespace VRKeys {
 		public void HandleCancel () {
 			Debug.Log ("Cancelled keyboard input!");
             this.gameObject.SetActive(false);
-		}
+            control.SetActive(true);
+
+            GameObject camera = GameObject.Find("Main Camera");
+            GameObject.Destroy(camera);
+
+        }
 
         /// <summary>
         /// Pretend to submit the email before resetting.
