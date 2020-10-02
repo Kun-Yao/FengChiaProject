@@ -11,11 +11,14 @@ public class CarController : MonoBehaviour
     float maxspeed = 300;
     Vector3 checkPoint;
     float maxForce = 0;
+    float turn = 0;
+    Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
     {
         checkPoint = transform.position;
+        rb = transform.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -33,52 +36,97 @@ public class CarController : MonoBehaviour
 
     private void Move()
     {
-        transform.GetComponent<Rigidbody>().AddForce(transform.forward * maxForce);
-        //移動
-        if (Input.GetKey(KeyCode.UpArrow) || right.GetComponent<Control>().accelator() > 0)
+        //transform.GetComponent<Rigidbody>().AddForce(transform.forward * maxForce);
+        ////移動
+        //if (Input.GetKey(KeyCode.UpArrow) || right.GetComponent<Control>().accelator() > 0)
+        //{
+        //    direction = 1;
+        //    if (transform.GetComponent<Rigidbody>().velocity.magnitude < maxspeed)
+        //    {
+        //        maxForce = 15000 * right.GetComponent<Control>().accelator();
+        //        print(right.GetComponent<Control>().accelator());
+        //    }
+        //    else
+        //    {
+        //        transform.GetComponent<Rigidbody>().velocity = transform.forward * direction * maxspeed;
+        //    }
+        //}
+        //else if (Input.GetKey(KeyCode.DownArrow) || left.GetComponent<Control>().goback() > 0)
+        //{
+        //    direction = -1;
+        //    if (transform.GetComponent<Rigidbody>().velocity.magnitude < maxspeed)
+        //    {
+        //        maxForce = -15000 * left.GetComponent<Control>().goback();
+        //    }
+        //    else
+        //    {
+        //        transform.GetComponent<Rigidbody>().velocity = transform.forward * direction * maxspeed;
+        //    }
+        //}
+        //else
+        //{
+        //    direction = 0;
+        //    transform.GetComponent<Rigidbody>().velocity *= 0.93f;
+        //    maxForce = 0;
+        //}
+
+        ////轉彎
+        //if (Input.GetKey(KeyCode.RightArrow) || right.transform.localRotation.y > 0)
+        //{
+        //    Debug.Log("右轉");
+        //    float angle = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        //    transform.Rotate(0, angle * direction, 0);
+        //}
+        //else if (Input.GetKey(KeyCode.LeftArrow) || right.transform.localRotation.y < 0)
+        //{
+        //    Debug.Log("左轉");
+        //    float angle = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        //    transform.Rotate(0, angle * direction, 0);
+        //}
+
+        //前進/後退
+        if (right.GetComponent<Control>().accelator() > 0)
         {
             direction = 1;
-            if (transform.GetComponent<Rigidbody>().velocity.magnitude < maxspeed)
-            {
-                maxForce = 15000 * right.GetComponent<Control>().accelator();
-                print(right.GetComponent<Control>().accelator());
-            }
-            else
-            {
-                transform.GetComponent<Rigidbody>().velocity = transform.forward * direction * maxspeed;
-            }
         }
-        else if (Input.GetKey(KeyCode.DownArrow) || left.GetComponent<Control>().goback() > 0)
+        else if (left.GetComponent<Control>().goback() > 0)
         {
             direction = -1;
-            if (transform.GetComponent<Rigidbody>().velocity.magnitude < maxspeed)
-            {
-                maxForce = -15000 * left.GetComponent<Control>().goback();
-            }
-            else
-            {
-                transform.GetComponent<Rigidbody>().velocity = transform.forward * direction * maxspeed;
-            }
         }
         else
         {
             direction = 0;
-            transform.GetComponent<Rigidbody>().velocity *= 0.93f;
-            maxForce = 0;
+            rb.velocity *= 0.9f;
         }
 
         //轉彎
-        if (Input.GetKey(KeyCode.RightArrow) || right.transform.localRotation.y > 0)
+        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        transform.Rotate(0, turn * direction, 0);
+        rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+
+        //飄移
+        if (Input.GetKey(KeyCode.LeftControl) && Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) > 10)
         {
-            Debug.Log("右轉");
-            float angle = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-            transform.Rotate(0, angle * direction, 0);
+            //持續增加角度並飄移
+            transform.Rotate(0, (1 - turn) * direction, 0);
         }
-        else if (Input.GetKey(KeyCode.LeftArrow) || right.transform.localRotation.y < 0)
+        else if (Input.GetKeyUp(KeyCode.LeftControl) && Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) > 10)
         {
-            Debug.Log("左轉");
-            float angle = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-            transform.Rotate(0, angle * direction, 0);
+            //以現在的角度繼續飄移
+        }
+        else
+        {
+
+        }
+
+        //施力
+        if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
+        {
+            rb.AddForce(transform.forward * maxForce * direction * Mathf.Cos(turn));
+        }
+        else
+        {
+            rb.velocity = transform.forward * direction * maxspeed;
         }
     }
 
