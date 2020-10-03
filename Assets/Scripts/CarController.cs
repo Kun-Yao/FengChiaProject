@@ -12,6 +12,7 @@ public class CarController : MonoBehaviour
     Vector3 checkPoint;
     float maxForce = 0;
     float turn = 0;
+    Vector3 DriftWay;
     Rigidbody rb;
 
     // Start is called before the first frame update
@@ -99,31 +100,28 @@ public class CarController : MonoBehaviour
             rb.velocity *= 0.9f;
         }
 
+        //飄移
+        if (Input.GetKeyDown(KeyCode.LeftControl) && turn != 0)
+        {
+            //持續增加角度並飄移
+            turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+            while(Mathf.Abs(rb.velocity.z) > 10 && !Input.GetKeyUp(KeyCode.LeftControl))
+            {
+                transform.Rotate(0, turn * direction, 0);
+                DriftWay = transform.forward * direction + transform.right * (turn / Mathf.Abs(turn));
+                rb.AddForce(DriftWay * maxForce);
+            }
+
+            //以現在的角度繼續飄移
+            float angle = turn;
+            //換方向就停止飄移
+            while (Mathf.Abs(turn + angle) > Mathf.Abs(angle) && Mathf.Abs(rb.velocity.z) > 10) ;
+        }
+
         //轉彎
         turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
         transform.Rotate(0, turn * direction, 0);
         rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-
-        //飄移
-        if (Input.GetKey(KeyCode.LeftControl) && Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) > 10)
-        {
-            //持續增加角度並飄移
-            
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftControl) && Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) > 10)
-        {
-            //以現在的角度繼續飄移
-            float angle = turn;
-            //換方向就停止飄移
-            while(Mathf.Abs(turn + angle) > Mathf.Abs(angle))
-            {
-
-            }
-        }
-        else
-        {
-
-        }
 
         //施力
         if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
