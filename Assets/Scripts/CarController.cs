@@ -108,11 +108,17 @@ public class CarController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) > 10)
         {
             //持續增加角度並飄移
-            transform.Rotate(0, (1 - turn) * direction, 0);
+            
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl) && Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) > 10)
         {
             //以現在的角度繼續飄移
+            float angle = turn;
+            //換方向就停止飄移
+            while(Mathf.Abs(turn + angle) > Mathf.Abs(angle))
+            {
+
+            }
         }
         else
         {
