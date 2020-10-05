@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class ButtonEvents : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ButtonEvents : MonoBehaviour
     GameObject target;
     public GameObject demo = null;
     public GameObject control = null;
+    private string txtName;
 
     public static GameObject currentObject;
 

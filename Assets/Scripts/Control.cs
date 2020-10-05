@@ -14,6 +14,7 @@ public class Control : MonoBehaviour
     public SteamVR_Action_Single RGas;
     public SteamVR_Action_Single LGas;
     public SteamVR_Action_Boolean Reset;
+    public SteamVR_Action_Boolean drift;
 
     public Ray ray;
     public RaycastHit hit;
@@ -50,5 +51,15 @@ public class Control : MonoBehaviour
     public float goback()
     {
         return LGas.axis;
+    }
+
+    public bool Drift()
+    {
+        return drift.stateDown;
+    }
+
+    public bool unDrift()
+    {
+        return drift.stateUp;
     }
 }

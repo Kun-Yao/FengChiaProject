@@ -20,7 +20,7 @@ public class Combine : MonoBehaviour
     private List<string> carList = new List<string>();
     private string test;
     private GameObject CameraRig;
-    private GameObject demo;
+    public GameObject demo;
 
     void Awake()
     {
@@ -38,85 +38,52 @@ public class Combine : MonoBehaviour
         {
             print("No CareraRig");
         }
-        demo = GameObject.Find("DemoScene");
+        //demo = GameObject.Find("DemoScene");
     }
 
     public void combine()
     {
-        StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
-        
+        close();
         MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-
-        if (save())
+        StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
+        path = "Assets/Resources/Prefabs/" + name + ".Prefab";
+        ass = "Assets/Resources/Models/" + name + ".asset";
+        sw.WriteLine(name);
+        sw.Close();
+        
+        int i = 0;
+        while (i < meshFilters.Length)
         {
-            sw.WriteLine(name + "a");
-            int i = 0;
-            while (i < meshFilters.Length)
-            {
-                combine[i].mesh = meshFilters[i].sharedMesh;
-                combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
-                meshFilters[i].gameObject.SetActive(false);
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+            meshFilters[i].gameObject.SetActive(false);
 
-                i++;
-            }
-            sw.WriteLine(name + "b");
-            transform.GetComponent<MeshFilter>().mesh = new Mesh();
-            transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-            transform.gameObject.SetActive(true);
-            sw.WriteLine(name + "c");
-            foreach (Transform child in transform)
-            {
-                GameObject.Destroy(child.gameObject);
-            }
-
-            
-            sw.WriteLine(name+ "1");
-            giveComponent(CameraRig);
-            sw.WriteLine(name + "2");
-            Mesh msh = engine.GetComponent<MeshFilter>().sharedMesh;
-            sw.WriteLine(name + "3");
-            AssetDatabase.CreateAsset(msh, ass);
-            sw.WriteLine(name + "4");
-            AssetDatabase.SaveAssets();
-            sw.WriteLine(name + "5");
-            PrefabUtility.SaveAsPrefabAsset(engine, path);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            SceneManager.LoadScene(0);
-            sw.Close();
+            i++;
         }
+
+        transform.GetComponent<MeshFilter>().mesh = new Mesh();
+        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+        transform.gameObject.SetActive(true);
+
+        foreach (Transform child in transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+
+        giveComponent(CameraRig);
+        Mesh msh = engine.GetComponent<MeshFilter>().sharedMesh;
+        AssetDatabase.CreateAsset(msh, ass);
+        AssetDatabase.SaveAssets();
+        PrefabUtility.SaveAsPrefabAsset(engine, path);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        SceneManager.LoadScene(0);
+        
     }
 
-    //確認名稱是否重複
-    private bool save()
-    {
-        bool isActive = true;
-        foreach (string car in carList)
-        {
-            if (car.Equals(name))
-            {
-                print("same");
-                isActive = false;
-                break;
-            }
-        }
-
-        if (isActive)
-        {
-
-            path = "Assets/Resources/Prefabs/" + name + ".Prefab";
-            ass = "Assets/Resources/Models/" + name + ".asset";
-            carList.Add(name);
-            StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
-            sw.WriteLine(name);
-            sw.Close();
-            return true;
-        }
-        else
-            demo.GetComponent<DemoScene>();
-        return false;
-    }
+    
 
     public void giveComponent(GameObject camera)
     {
@@ -162,5 +129,11 @@ public class Combine : MonoBehaviour
     {
         this.name = name;
         combine();
+    }
+
+    public void close()
+    {
+        demo.SetActive(false);
+        
     }
 }

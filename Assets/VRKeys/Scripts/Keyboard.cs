@@ -108,10 +108,10 @@ namespace VRKeys {
 		/// </summary>
 		public KeyboardSubmitEvent OnSubmit = new KeyboardSubmitEvent ();
 
-		/// <summary>
-		/// Listen for events when Cancel() is called.
-		/// </summary>
-		public UnityEvent OnCancel = new UnityEvent ();
+        /// <summary>
+        /// Listen for events when Cancel() is called.
+        /// </summary>
+        public UnityEvent OnCancel = new UnityEvent ();
 
 		private GameObject playerSpace;
 

@@ -22,12 +22,15 @@ public class GameStart : MonoBehaviour
             if (gameManager.getEmpty(i) == true)
             {
                 GameObject player = (GameObject)Instantiate(Resources.Load("Prefabs/car14"), StartLine.transform.position, Quaternion.Euler(0, 0, 0));
+                string[] tmp = player.name.Split('(');
+                player.name = tmp[0];
                 print(i);
                 player.transform.position -= new Vector3(0, 0, player.GetComponent<BoxCollider>().center.z);
                 player.transform.position -= new Vector3(0, 0, player.GetComponent<BoxCollider>().size.z/2 + 1);
                 print(player.name);
                 this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
                 player.transform.GetChild(0).gameObject.SetActive(true);
+                player.GetComponent<Rigidbody>().useGravity = true;
                 gameManager.setEmpty(i, false);
                 break;
             }

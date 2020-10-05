@@ -13,5 +13,6 @@ public static class carevent
         newG.name = name;
         newG.GetComponent<CarController>().enabled = true;
         newG.transform.GetChild(0).gameObject.SetActive(true);
+        newG.GetComponent<Rigidbody>().useGravity = true;
     }
 }

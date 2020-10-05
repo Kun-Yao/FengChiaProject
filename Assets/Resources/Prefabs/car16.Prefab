@@ -216,6 +216,12 @@ MonoBehaviour:
   LGas:
     actionPath: /actions/default/in/LPull
     needsReinit: 0
+  Reset:
+    actionPath: 
+    needsReinit: 0
+  drift:
+    actionPath: 
+    needsReinit: 0
   bHit: 0
 --- !u!1 &683075988163395205
 GameObject:
@@ -318,6 +324,12 @@ MonoBehaviour:
     needsReinit: 0
   LGas:
     actionPath: /actions/default/in/LPull
+    needsReinit: 0
+  Reset:
+    actionPath: 
+    needsReinit: 0
+  drift:
+    actionPath: 
     needsReinit: 0
   bHit: 0
 --- !u!1 &3137721070351829159
@@ -520,6 +532,12 @@ MonoBehaviour:
   LGas:
     actionPath: 
     needsReinit: 0
+  Reset:
+    actionPath: 
+    needsReinit: 0
+  drift:
+    actionPath: 
+    needsReinit: 0
   bHit: 0
 --- !u!1 &4963387257792916267
 GameObject:
@@ -586,6 +604,7 @@ GameObject:
   - component: {fileID: 6161928915210399514}
   - component: {fileID: 6251199171049074215}
   - component: {fileID: 6007725825059235200}
+  - component: {fileID: 3813022201962223316}
   m_Layer: 0
   m_Name: car16
   m_TagString: Block
@@ -694,6 +713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   engine: {fileID: 5103805618936480652}
+  demo: {fileID: 0}
 --- !u!65 &6161928915210399514
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -737,6 +757,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 64
   m_CollisionDetection: 0
+--- !u!114 &3813022201962223316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5103805618936480652}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 0.9475136, g: 1, b: 0, a: 1}
+  outlineWidth: 6
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &5528720947176959425
 GameObject:
   m_ObjectHideFlags: 0

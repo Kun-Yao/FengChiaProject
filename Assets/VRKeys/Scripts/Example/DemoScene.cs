@@ -12,6 +12,9 @@ using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace VRKeys {
 
@@ -112,6 +115,30 @@ namespace VRKeys {
 				return;
 			}
 
+            StreamReader sr = new StreamReader("Assets/Resources/CarList/list.txt");
+            List<string> carList = new List<string>();
+            string test = sr.ReadLine();
+            while (test != null)
+            {
+                carList.Add(test);
+                test = sr.ReadLine();
+            }
+            sr.Close();
+
+            foreach (string car in carList)
+            {
+                if(text.Equals(car))
+                {
+                    keyboard.ShowValidationMessage("Duplicate name");
+                    keyboard.SetText("");
+                    keyboard.EnableInput();
+                    return;
+                }
+            }
+            StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
+            sw.WriteLine(text);
+            sw.Close();
+
             //StartCoroutine (SubmitEmail (text));
             combine.GetComponent<Combine>().SetName(text);
         }
@@ -150,12 +177,5 @@ namespace VRKeys {
 			}
 			return true;
 		}
-
-        public void ReInput()
-        {
-            keyboard.ShowValidationMessage("Duplicate name");
-            keyboard.SetText("");
-            keyboard.EnableInput();
-        }
 	}
 }
