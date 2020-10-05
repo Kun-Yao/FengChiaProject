@@ -55,7 +55,7 @@ public class Control : MonoBehaviour
 
     public bool Drift()
     {
-        return drift.stateDown;
+        return drift.state;
     }
 
     public bool unDrift()
