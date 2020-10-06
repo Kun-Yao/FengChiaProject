@@ -85,7 +85,7 @@ public class Combine : MonoBehaviour
 
     
 
-    public void giveComponent(GameObject camera)
+    public void giveComponent(GameObject cameraRig)
     {
 
         if (engine == null)
@@ -116,7 +116,7 @@ public class Combine : MonoBehaviour
         print(rb.centerOfMass);
 
         Vector3 PosOfCam = new Vector3(box.size.x / 2, box.size.y / 2, box.size.z / 2) + new Vector3(0, box.size.y / 2 + 0.25f, -(box.size.z / 2 + 2));
-        GameObject t = Instantiate(camera, PosOfCam, Quaternion.Euler(0, 0, 0), engine.transform);
+        GameObject t = Instantiate(cameraRig, PosOfCam, Quaternion.Euler(0, 0, 0), engine.transform);
         t.transform.SetAsFirstSibling();
         t.SetActive(false);
         //選好賽車再啟動所有component

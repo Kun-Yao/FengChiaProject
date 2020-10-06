@@ -5,16 +5,16 @@ using Valve.VR;
 
 public class Control : MonoBehaviour
 {
-    public SteamVR_Action_Boolean RTrig;
-    public SteamVR_Action_Boolean LTrig;
-    public SteamVR_Action_Boolean side;
-    public SteamVR_Action_Boolean menu;
-    public SteamVR_Action_Pose pose;
-    public SteamVR_Action_Vector2 TouchAxis;
-    public SteamVR_Action_Single RGas;
-    public SteamVR_Action_Single LGas;
-    public SteamVR_Action_Boolean Reset;
-    public SteamVR_Action_Boolean drift;
+    [SerializeField] SteamVR_Action_Boolean RTrig;
+    [SerializeField] SteamVR_Action_Boolean LTrig;
+    [SerializeField] SteamVR_Action_Boolean side;
+    [SerializeField] SteamVR_Action_Boolean menu;
+    [SerializeField] SteamVR_Action_Pose pose;
+    [SerializeField] SteamVR_Action_Vector2 TouchAxis;
+    [SerializeField] SteamVR_Action_Single RGas;
+    [SerializeField] SteamVR_Action_Single LGas;
+    [SerializeField] SteamVR_Action_Boolean Reset;
+    [SerializeField] SteamVR_Action_Boolean drift;
 
     public Ray ray;
     public RaycastHit hit;

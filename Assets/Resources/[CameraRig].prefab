@@ -79,10 +79,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RTrig:
-    actionPath: 
+    actionPath: /actions/default/in/RightTrigger
     needsReinit: 0
   LTrig:
-    actionPath: 
+    actionPath: /actions/default/in/LeftTrigger
     needsReinit: 0
   side:
     actionPath: /actions/default/in/GrabGrip
@@ -101,6 +101,12 @@ MonoBehaviour:
     needsReinit: 0
   LGas:
     actionPath: /actions/default/in/LPull
+    needsReinit: 0
+  Reset:
+    actionPath: /actions/default/in/Reset
+    needsReinit: 0
+  drift:
+    actionPath: /actions/default/in/Drift
     needsReinit: 0
   bHit: 0
 --- !u!1 &8995267455783885246
@@ -187,6 +193,12 @@ MonoBehaviour:
     actionPath: 
     needsReinit: 0
   LGas:
+    actionPath: 
+    needsReinit: 0
+  Reset:
+    actionPath: 
+    needsReinit: 0
+  drift:
     actionPath: 
     needsReinit: 0
   bHit: 0
@@ -359,7 +371,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8995267455784085384}
   - component: {fileID: 9025387859155331598}
-  - component: {fileID: 8995267455783961557}
+  - component: {fileID: 2897172219206223885}
   m_Layer: 0
   m_Name: Controller (left)
   m_TagString: Untagged
@@ -415,7 +427,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   broadcastDeviceChanges: 1
---- !u!114 &8995267455783961557
+--- !u!114 &2897172219206223885
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -428,10 +440,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RTrig:
-    actionPath: 
+    actionPath: /actions/default/in/RightTrigger
     needsReinit: 0
   LTrig:
-    actionPath: 
+    actionPath: /actions/default/in/LeftTrigger
     needsReinit: 0
   side:
     actionPath: /actions/default/in/GrabGrip
@@ -450,6 +462,12 @@ MonoBehaviour:
     needsReinit: 0
   LGas:
     actionPath: /actions/default/in/LPull
+    needsReinit: 0
+  Reset:
+    actionPath: /actions/default/in/Reset
+    needsReinit: 0
+  drift:
+    actionPath: /actions/default/in/Drift
     needsReinit: 0
   bHit: 0
 --- !u!1 &8995396643402552190

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    public GameObject left;
-    public GameObject right;
+    GameObject left;
+    GameObject right;
 
     int direction = 0;
     float maxspeed = 60;
@@ -20,6 +20,12 @@ public class CarController : MonoBehaviour
     {
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
+        left = GameObject.Find("Controller (left)");
+        right = GameObject.Find("Controller (right)");
+        if(right == null)
+        {
+            print("isNull");
+        }
     }
 
     // Update is called once per frame
@@ -52,6 +58,7 @@ public class CarController : MonoBehaviour
             rb.velocity *= 0.9f;
         }
 
+        //2020/10/06去抄網路上的code
         if (left.GetComponent<Control>().Drift() && turn != 0)
         {
             //持續旋轉並飄移

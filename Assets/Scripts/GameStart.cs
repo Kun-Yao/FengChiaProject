@@ -21,16 +21,21 @@ public class GameStart : MonoBehaviour
         {
             if (gameManager.getEmpty(i) == true)
             {
-                GameObject player = (GameObject)Instantiate(Resources.Load("Prefabs/car14"), StartLine.transform.position, Quaternion.Euler(0, 0, 0));
+                //生成賽車(player)
+                GameObject player = (GameObject)Instantiate(Resources.Load("Prefabs/" + gameManager.CarName), StartLine.transform.position, Quaternion.Euler(0, 0, 0));
                 string[] tmp = player.name.Split('(');
                 player.name = tmp[0];
-                print(i);
+
+                //起始位置
                 player.transform.position -= new Vector3(0, 0, player.GetComponent<BoxCollider>().center.z);
                 player.transform.position -= new Vector3(0, 0, player.GetComponent<BoxCollider>().size.z/2 + 1);
-                print(player.name);
+
+                //關閉場地攝影機
                 this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+                //開啟賽車攝影機
                 player.transform.GetChild(0).gameObject.SetActive(true);
                 player.GetComponent<Rigidbody>().useGravity = true;
+                player.GetComponent<CarController>().enabled = true;
                 gameManager.setEmpty(i, false);
                 break;
             }

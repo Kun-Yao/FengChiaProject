@@ -47,13 +47,14 @@ public class ChooseCar : MonoBehaviour
         {
             vs[i] = vs[i].Substring(0, vs[i].Length - 1);
         }
-        
+
         //顯示所有的車子
         for (int i = 0; i < vs.Length - 1; i += 4 )
         {
             //一列四台
-            for(int j = 0; j < 4; j++)
+            for(int j = 0; j < 4 && i+j < vs.Length - 1; j++)
             {
+                print(j);
                 GameObject model = (GameObject)Instantiate(Resources.Load("Prefabs/" + vs[i+j]), PosOfCar, Quaternion.Euler(0, 0, 0), transform);
                 model.GetComponent<BoxCollider>().isTrigger = true;
                 //車子的X軸(待設定)
