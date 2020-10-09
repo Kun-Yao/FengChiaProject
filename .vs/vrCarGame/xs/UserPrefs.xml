@@ -1,0 +1,41 @@
+﻿<Properties StartupConfiguration="{82053E84-AB33-BE8E-717B-B8E2C0CA3ABE}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/VRKeys/Scripts/Example/DemoScene.cs">
+    <Files>
+      <File FileName="Assets/Scripts/Combine.cs" Line="46" Column="31" />
+      <File FileName="Assets/VRKeys/Scripts/Example/DemoScene.cs" Line="120" Column="41" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="vrCarGame" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True" />
+              <Node name="VRKeys" expanded="True">
+                <Node name="Scripts" expanded="True">
+                  <Node name="Example" expanded="True">
+                    <Node name="DemoScene.cs" selected="True" />
+                  </Node>
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="vrCarGame" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="e6e6054b-98f0-4cfe-9014-34213af7d461" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

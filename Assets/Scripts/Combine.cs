@@ -43,14 +43,26 @@ public class Combine : MonoBehaviour
 
     public void combine()
     {
-        close();
+        demo.SetActive(false);
+
         MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-        StreamWriter sw = new StreamWriter("Assets/Resources/CarList/list.txt", true);
+
+        StreamReader sr = new StreamReader("Assets/Resources/CarList/list.txt");
+        test = sr.ReadLine();
+        while (test != null)
+        {
+            carList.Add(test);
+            test = sr.ReadLine();
+        }
+        sr.Close();
+        if (carList.Count > 0)
+        {
+            name = carList[carList.Count - 1];
+        }
         path = "Assets/Resources/Prefabs/" + name + ".Prefab";
         ass = "Assets/Resources/Models/" + name + ".asset";
-        sw.WriteLine(name);
-        sw.Close();
+        
         
         int i = 0;
         while (i < meshFilters.Length)
@@ -123,17 +135,5 @@ public class Combine : MonoBehaviour
 
         engine.tag = "Player";
         //engine.AddComponent<Lap>();
-    }
-
-    public void SetName(string name)
-    {
-        this.name = name;
-        combine();
-    }
-
-    public void close()
-    {
-        demo.SetActive(false);
-        
     }
 }

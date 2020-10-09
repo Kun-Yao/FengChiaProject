@@ -139,8 +139,7 @@ namespace VRKeys {
             sw.WriteLine(text);
             sw.Close();
 
-            //StartCoroutine (SubmitEmail (text));
-            combine.GetComponent<Combine>().SetName(text);
+			combine.GetComponent<Combine>().combine();
         }
 
 		public void HandleCancel () {
