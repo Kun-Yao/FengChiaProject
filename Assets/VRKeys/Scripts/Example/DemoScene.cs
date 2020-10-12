@@ -31,6 +31,7 @@ namespace VRKeys {
         public GameObject combine;
         public GameObject control;
 
+
 		/// <summary>
 		/// See the following for why this is so convoluted:
 		/// http://referencesource.microsoft.com/#System.ComponentModel.DataAnnotations/DataAnnotations/EmailAddressAttribute.cs,54
@@ -69,12 +70,13 @@ namespace VRKeys {
 			keyboard.Disable ();
 		}
 
-		/// <summary>
-		/// Press space to show/hide the keyboard.
-		///
-		/// Press Q for Qwerty keyboard, D for Dvorak keyboard, and F for French keyboard.
-		/// </summary>
-		private void Update () {
+
+        /// <summary>
+        /// Press space to show/hide the keyboard.
+        ///
+        /// Press Q for Qwerty keyboard, D for Dvorak keyboard, and F for French keyboard.
+        /// </summary>
+        private void Update () {
 			if (Input.GetKeyDown (KeyCode.Space)) {
 				if (keyboard.disabled) {
 					keyboard.Enable ();
@@ -139,7 +141,7 @@ namespace VRKeys {
             sw.WriteLine(text);
             sw.Close();
 
-			combine.GetComponent<Combine>().combine();
+            combine.GetComponent<Combine>().fuck();
         }
 
 		public void HandleCancel () {
@@ -176,5 +178,8 @@ namespace VRKeys {
 			}
 			return true;
 		}
-	}
+
+        
+
+    }
 }

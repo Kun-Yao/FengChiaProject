@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class carevent
 {
+    public static bool canMove = false;
+
     public static void ResetCar(string CarName, Vector3 Position)
     {
         string name = CarName;
@@ -14,5 +16,6 @@ public static class carevent
         newG.GetComponent<CarController>().enabled = true;
         newG.transform.GetChild(0).gameObject.SetActive(true);
         newG.GetComponent<Rigidbody>().useGravity = true;
+        canMove = true;
     }
 }

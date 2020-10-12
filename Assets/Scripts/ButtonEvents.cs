@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
+using UnityEngine.Events;
 
 public class ButtonEvents : MonoBehaviour
 {
@@ -22,6 +23,11 @@ public class ButtonEvents : MonoBehaviour
     }
 
     private void Update()
+    {
+        Invoke("button", 1);
+    }
+
+    private void button()
     {
         if (right.GetComponent<Control>().GetRGrab())
         {
@@ -59,5 +65,5 @@ public class ButtonEvents : MonoBehaviour
             }
         }
     }
-        
+
 }

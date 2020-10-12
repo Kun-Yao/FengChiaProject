@@ -21,6 +21,7 @@ public class Combine : MonoBehaviour
     private string test;
     private GameObject CameraRig;
     public GameObject demo;
+    public GameObject control;
 
     void Awake()
     {
@@ -43,8 +44,6 @@ public class Combine : MonoBehaviour
 
     public void combine()
     {
-        demo.SetActive(false);
-
         MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
@@ -62,7 +61,7 @@ public class Combine : MonoBehaviour
         }
         path = "Assets/Resources/Prefabs/" + name + ".Prefab";
         ass = "Assets/Resources/Models/" + name + ".asset";
-        
+
         
         int i = 0;
         while (i < meshFilters.Length)
@@ -84,15 +83,16 @@ public class Combine : MonoBehaviour
         }
 
 
-        giveComponent(CameraRig);
         Mesh msh = engine.GetComponent<MeshFilter>().sharedMesh;
+        giveComponent(CameraRig);
         AssetDatabase.CreateAsset(msh, ass);
         AssetDatabase.SaveAssets();
         PrefabUtility.SaveAsPrefabAsset(engine, path);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        SceneManager.LoadScene(0);
-        
+        //SceneManager.LoadScene(0);
+        print("Finish");
+
     }
 
     
@@ -136,4 +136,16 @@ public class Combine : MonoBehaviour
         engine.tag = "Player";
         //engine.AddComponent<Lap>();
     }
+
+    public void fuck()
+    {
+        demo.SetActive(false);
+        control.SetActive(true);
+
+        GameObject camera = GameObject.Find("Main Camera");
+        GameObject.Destroy(camera);
+
+        Invoke("combine", 2);
+    }
+    
 }
