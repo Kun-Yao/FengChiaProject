@@ -21,7 +21,7 @@ public class CarController : MonoBehaviour
     bool isDrifting = false;
 
     Vector3 checkPoint;
-    Vector3 DriftWay;
+    Vector3 DragWay;
     Rigidbody rb;
 
     private void Awake()
@@ -29,6 +29,7 @@ public class CarController : MonoBehaviour
         RGas.onAxis += Acce;
         LGas.onAxis += GoBack;
         Reset.onStateUp += Relife;
+        Drift.onStateDown += Jump;
         Drift.onState += StartDrift;
         Drift.onStateUp += EndDrift;
     }
@@ -38,6 +39,7 @@ public class CarController : MonoBehaviour
         RGas.onAxis -= Acce;
         LGas.onAxis -= GoBack;
         Reset.onStateUp -= Relife;
+        Drift.onStateDown -= Jump;
         Drift.onState -= StartDrift;
         Drift.onStateUp -= EndDrift;
     }
@@ -146,19 +148,96 @@ public class CarController : MonoBehaviour
         }
     }
 
-    void StartDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    private void Acce(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
     {
-        if (left.GetComponent<Control>().unDrift())
+        direction = 1;
+        if (isGround == false) return;
+        if(RGas.delta > 0.05f)
         {
-            isDrifting = false;
+            GiveForce();
+        }
+        else
+        {
+            direction = 0;
+            rb.velocity *= 0.9f;
+        }
+        TurnAround();
+    }
+
+    private void GoBack(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
+    {
+        direction = -1;
+        if (isGround == false) return;
+        if (LGas.delta > 0.05f)
+        {
+            GiveForce();
+        }
+        else
+        {
+            direction = 0;
+            rb.velocity *= 0.9f;
+        }
+        TurnAround();
+    }
+
+    private void Jump(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        if (isGround == false) return;
+        rb.AddForce(transform.up * 1500, ForceMode.Impulse);
+    }
+
+    private void StartDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        //不在地上或速度小於5就不飄移
+        if (isGround == false || rb.velocity.z <= 5) return;   
+        if (turn != 0)
+        {
+            isDrifting = true;
+            TurnAround();
+            if(turn > 0)
+            {
+                DragWay = -1 * (transform.forward * direction) + (transform.right);
+            }
+            else
+            {
+                DragWay = -1 * (transform.forward * direction) + (-transform.right);
+            }
+            rb.AddForce(DragWay * 1500);
         }
     }
 
     private void EndDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-
+        if (isGround == false || rb.velocity.z <= 5) return;
+        rb.AddForce(DragWay*1500);
     }
 
+    private void TurnAround()
+    {
+        //轉彎
+        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        if (Mathf.Abs(turn) < 45)
+        {
+            transform.Rotate(0, turn * direction, 0);
+            rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+        }
+        transform.Rotate(0, turn * direction, 0);
+        rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+
+        
+    }
+    private void GiveForce()
+    {
+        //施力
+        if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
+        {
+            rb.AddForce(transform.forward * maxForce * direction * (right.GetComponent<Control>().accelator() + left.GetComponent<Control>().goback()) * Mathf.Cos(turn));
+        }
+        else
+        {
+            rb.velocity = transform.forward * direction * maxspeed;
+        }
+    }
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("ground"))
@@ -185,20 +264,10 @@ public class CarController : MonoBehaviour
         if (collision.gameObject.CompareTag("ground"))
         {
             transform.GetComponent<Rigidbody>().mass = 100;
-            if(left.GetComponent<Control>().Drift() && right.transform.localRotation.y != 0)
+            if (left.GetComponent<Control>().Drift() && right.transform.localRotation.y != 0)
             {
                 isDrifting = true;
             }
         }
-    }
-
-    private void Acce(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
-    {
-
-    }
-
-    private void GoBack(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
-    {
-
     }
 }
