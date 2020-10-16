@@ -24,37 +24,44 @@ public class CarController : MonoBehaviour
     Vector3 DragWay;
     Rigidbody rb;
 
+    Ray rayForward;
+    Ray rayBackward;
+    Ray rayRight;
+    Ray rayLeft;
+    RaycastHit RHit;
+
     private void Awake()
     {
-        RGas.onAxis += Acce;
-        LGas.onAxis += GoBack;
+        //RGas.onAxis += Acce;
+        //LGas.onAxis += GoBack;
         Reset.onStateUp += Relife;
-        Drift.onStateDown += Jump;
-        Drift.onState += StartDrift;
-        Drift.onStateUp += EndDrift;
+        //Drift.onStateDown += Jump;
+        //Drift.onState += StartDrift;
+        //Drift.onStateUp += EndDrift;
     }
 
     private void OnDestroy()
     {
-        RGas.onAxis -= Acce;
-        LGas.onAxis -= GoBack;
+        //RGas.onAxis -= Acce;
+        //LGas.onAxis -= GoBack;
         Reset.onStateUp -= Relife;
-        Drift.onStateDown -= Jump;
-        Drift.onState -= StartDrift;
-        Drift.onStateUp -= EndDrift;
+        //Drift.onStateDown -= Jump;
+        //Drift.onState -= StartDrift;
+        //Drift.onStateUp -= EndDrift;
     }
 
-    // Start is called before the first frame update
+// Start is called before the first frame update
     void Start()
     {
+        print("inStart");
         if(carevent.canMove == false)
         {
             StartCoroutine(wait());
         }
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
-        left = GameObject.Find("Controller (left)");
-        right = GameObject.Find("Controller (right)");
+        left = transform.GetChild(0).transform.GetChild(0).gameObject;
+        right = transform.GetChild(0).transform.GetChild(1).gameObject;
         if(right == null)
         {
             print("isNull");
@@ -76,13 +83,20 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print("canMove is " + carevent.canMove);
+        rayForward = new Ray(transform.position + new Vector3(0, 0, 2.5f), -transform.up);
+        rayBackward = new Ray(transform.position + new Vector3(0, 0, -2.5f), -transform.up);
+        rayLeft = new Ray(transform.position + new Vector3(-2.5f, 0, 0), -transform.up);
+        rayRight = new Ray(transform.position + new Vector3(2.5f, 0, 0), -transform.up);
 
-        if(isGround && carevent.canMove)
+        if (!Physics.Raycast(rayForward, out RHit, 1.1f))
+        {
+
+        }
+        if (isGround && carevent.canMove)
         {
             if (isDrifting)
             {
-                //StartDrift();
+                StartDrift();
             }
             else
             {
@@ -95,14 +109,10 @@ public class CarController : MonoBehaviour
 
     private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        if (Input.GetKeyUp(KeyCode.R)/* || right.GetComponent<Control>().setReset()*/)
-        {
-            Debug.Log("break");
-            Debug.Log(gameObject.name);
-            string[] N = gameObject.name.Split('(');
-            carevent.ResetCar(N[0], checkPoint);
-
-        }
+        Debug.Log("break");
+        Debug.Log(gameObject.name);
+        string[] N = gameObject.name.Split('(');
+        carevent.ResetCar(N[0], checkPoint);
     }
     private void Move()
     {
@@ -123,19 +133,20 @@ public class CarController : MonoBehaviour
 
 
         //轉彎
-        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-        if (Mathf.Abs(turn) < 45)
-        {
-            transform.Rotate(0, turn * direction, 0);
-            rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-        }
-        transform.Rotate(0, turn * direction, 0);
-        rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+        //turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        //if (Mathf.Abs(turn) < 45)
+        //{
+        //    transform.Rotate(0, turn * direction, 0);
+        //    rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+        //}
+        //transform.Rotate(0, turn * direction, 0);
+        //rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+        TurnAround();
 
         if (left.GetComponent<Control>().Drift())
         {
             //跳躍
-            rb.AddForce(transform.up * 1500, ForceMode.Impulse);
+            rb.AddForce(transform.up * 150, ForceMode.Impulse);
         }
         //施力
         if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
@@ -148,69 +159,87 @@ public class CarController : MonoBehaviour
         }
     }
 
-    private void Acce(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
-    {
-        direction = 1;
-        if (isGround == false) return;
-        if(RGas.delta > 0.05f)
-        {
-            GiveForce();
-        }
-        else
-        {
-            direction = 0;
-            rb.velocity *= 0.9f;
-        }
-        TurnAround();
-    }
-
-    private void GoBack(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
-    {
-        direction = -1;
-        if (isGround == false) return;
-        if (LGas.delta > 0.05f)
-        {
-            GiveForce();
-        }
-        else
-        {
-            direction = 0;
-            rb.velocity *= 0.9f;
-        }
-        TurnAround();
-    }
-
-    private void Jump(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    {
-        if (isGround == false) return;
-        rb.AddForce(transform.up * 1500, ForceMode.Impulse);
-    }
-
-    private void StartDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    private void StartDrift()
     {
         //不在地上或速度小於5就不飄移
-        if (isGround == false || rb.velocity.z <= 5) return;   
+        if (isGround == false || rb.velocity.z <= 5) return;
         if (turn != 0)
         {
             isDrifting = true;
             TurnAround();
-            if(turn > 0)
-            {
-                DragWay = -1 * (transform.forward * direction) + (transform.right);
-            }
-            else
-            {
-                DragWay = -1 * (transform.forward * direction) + (-transform.right);
-            }
-            rb.AddForce(DragWay * 1500);
+            //if (turn > 0)
+            //{
+            //    DragWay = -1 * (transform.forward * direction) + (transform.right);
+            //}
+            //else
+            //{
+            //    DragWay = -1 * (transform.forward * direction) + (-transform.right);
+            //}
+            //rb.AddForce(DragWay * 1500);
         }
     }
+    //private void Acce(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
+    //{
+    //    direction = 1;
+    //    if (isGround == false) return;
+    //    if(RGas.delta > 0.05f)
+    //    {
+    //        GiveForce();
+    //    }
+    //    else
+    //    {
+    //        direction = 0;
+    //        rb.velocity *= 0.9f;
+    //    }
+    //    TurnAround();
+    //}
 
-    private void EndDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    {
-        if (isGround == false || rb.velocity.z <= 5) return;
-        rb.AddForce(DragWay*1500);
-    }
+    //private void GoBack(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
+    //{
+    //    direction = -1;
+    //    if (isGround == false) return;
+    //    if (LGas.delta > 0.05f)
+    //    {
+    //        GiveForce();
+    //    }
+    //    else
+    //    {
+    //        direction = 0;
+    //        rb.velocity *= 0.9f;
+    //    }
+    //    TurnAround();
+    //}
+
+    //private void Jump(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    //{
+    //    if (isGround == false) return;
+    //    rb.AddForce(transform.up * 1500, ForceMode.Impulse);
+    //}
+
+    //private void StartDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    //{
+    //    //不在地上或速度小於5就不飄移
+    //    if (isGround == false || rb.velocity.z <= 5) return;   
+    //    if (turn != 0)
+    //    {
+    //        isDrifting = true;
+    //        TurnAround();
+    //        if(turn > 0)
+    //        {
+    //            DragWay = -1 * (transform.forward * direction) + (transform.right);
+    //        }
+    //        else
+    //        {
+    //            DragWay = -1 * (transform.forward * direction) + (-transform.right);
+    //        }
+    //        rb.AddForce(DragWay * 1500);
+    //    }
+    //}
+
+    //private void EndDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    //{
+    //    isDrifting = false;
+    //}
 
     private void TurnAround()
     {
@@ -219,25 +248,31 @@ public class CarController : MonoBehaviour
         if (Mathf.Abs(turn) < 45)
         {
             transform.Rotate(0, turn * direction, 0);
-            rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-        }
-        transform.Rotate(0, turn * direction, 0);
-        rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-
-        
-    }
-    private void GiveForce()
-    {
-        //施力
-        if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
-        {
-            rb.AddForce(transform.forward * maxForce * direction * (right.GetComponent<Control>().accelator() + left.GetComponent<Control>().goback()) * Mathf.Cos(turn));
         }
         else
         {
-            rb.velocity = transform.forward * direction * maxspeed;
+            transform.Rotate(0, (45 * turn / Mathf.Abs(turn)) * direction, 0);
+        }
+        if (!isDrifting)
+        {
+            //turn需要設定上限
+            rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
         }
     }
+
+    //private void GiveForce()
+    //{
+    //    //施力
+    //    if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
+    //    {
+    //        rb.AddForce(transform.forward * maxForce * direction * (right.GetComponent<Control>().accelator() + left.GetComponent<Control>().goback()) * Mathf.Cos(turn));
+    //    }
+    //    else
+    //    {
+    //        rb.velocity = transform.forward * direction * maxspeed;
+    //    }
+    //}
+
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("ground"))
