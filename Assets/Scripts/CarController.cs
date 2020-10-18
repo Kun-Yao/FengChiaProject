@@ -131,16 +131,6 @@ public class CarController : MonoBehaviour
             rb.velocity *= 0.9f;
         }
 
-
-        //轉彎
-        //turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-        //if (Mathf.Abs(turn) < 45)
-        //{
-        //    transform.Rotate(0, turn * direction, 0);
-        //    rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-        //}
-        //transform.Rotate(0, turn * direction, 0);
-        //rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
         TurnAround();
 
         if (left.GetComponent<Control>().Drift())
@@ -148,6 +138,12 @@ public class CarController : MonoBehaviour
             //跳躍
             rb.AddForce(transform.up * 150, ForceMode.Impulse);
         }
+
+        GiveForce();
+    }
+
+    private void GiveForce()
+    {
         //施力
         if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
         {
@@ -158,7 +154,6 @@ public class CarController : MonoBehaviour
             rb.velocity = transform.forward * direction * maxspeed;
         }
     }
-
     private void StartDrift()
     {
         //不在地上或速度小於5就不飄移
@@ -178,6 +173,23 @@ public class CarController : MonoBehaviour
             //rb.AddForce(DragWay * 1500);
         }
     }
+
+    private void TurnAround()
+    {
+        //轉彎
+        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        if(Mathf.Abs(turn) > 45)
+        {
+            turn = 45 * turn / Mathf.Abs(turn);
+        }
+        transform.Rotate(0, turn * direction, 0);
+
+        if (!isDrifting)
+        {
+            rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
+        }
+    }
+
     //private void Acce(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
     //{
     //    direction = 1;
@@ -240,25 +252,6 @@ public class CarController : MonoBehaviour
     //{
     //    isDrifting = false;
     //}
-
-    private void TurnAround()
-    {
-        //轉彎
-        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-        if (Mathf.Abs(turn) < 45)
-        {
-            transform.Rotate(0, turn * direction, 0);
-        }
-        else
-        {
-            transform.Rotate(0, (45 * turn / Mathf.Abs(turn)) * direction, 0);
-        }
-        if (!isDrifting)
-        {
-            //turn需要設定上限
-            rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-        }
-    }
 
     //private void GiveForce()
     //{
