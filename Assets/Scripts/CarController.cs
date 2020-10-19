@@ -83,15 +83,7 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rayForward = new Ray(transform.position + new Vector3(0, 0, 2.5f), -transform.up);
-        rayBackward = new Ray(transform.position + new Vector3(0, 0, -2.5f), -transform.up);
-        rayLeft = new Ray(transform.position + new Vector3(-2.5f, 0, 0), -transform.up);
-        rayRight = new Ray(transform.position + new Vector3(2.5f, 0, 0), -transform.up);
-
-        if (!Physics.Raycast(rayForward, out RHit, 1.1f))
-        {
-
-        }
+        CheckGroundNormal();
         if (isGround && carevent.canMove)
         {
             if (isDrifting)
@@ -190,112 +182,40 @@ public class CarController : MonoBehaviour
         }
     }
 
-    //private void Acce(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
-    //{
-    //    direction = 1;
-    //    if (isGround == false) return;
-    //    if(RGas.delta > 0.05f)
-    //    {
-    //        GiveForce();
-    //    }
-    //    else
-    //    {
-    //        direction = 0;
-    //        rb.velocity *= 0.9f;
-    //    }
-    //    TurnAround();
-    //}
-
-    //private void GoBack(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta)
-    //{
-    //    direction = -1;
-    //    if (isGround == false) return;
-    //    if (LGas.delta > 0.05f)
-    //    {
-    //        GiveForce();
-    //    }
-    //    else
-    //    {
-    //        direction = 0;
-    //        rb.velocity *= 0.9f;
-    //    }
-    //    TurnAround();
-    //}
-
-    //private void Jump(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    //{
-    //    if (isGround == false) return;
-    //    rb.AddForce(transform.up * 1500, ForceMode.Impulse);
-    //}
-
-    //private void StartDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    //{
-    //    //不在地上或速度小於5就不飄移
-    //    if (isGround == false || rb.velocity.z <= 5) return;   
-    //    if (turn != 0)
-    //    {
-    //        isDrifting = true;
-    //        TurnAround();
-    //        if(turn > 0)
-    //        {
-    //            DragWay = -1 * (transform.forward * direction) + (transform.right);
-    //        }
-    //        else
-    //        {
-    //            DragWay = -1 * (transform.forward * direction) + (-transform.right);
-    //        }
-    //        rb.AddForce(DragWay * 1500);
-    //    }
-    //}
-
-    //private void EndDrift(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    //{
-    //    isDrifting = false;
-    //}
-
-    //private void GiveForce()
-    //{
-    //    //施力
-    //    if (Mathf.Abs(transform.GetComponent<Rigidbody>().velocity.z) < maxspeed)
-    //    {
-    //        rb.AddForce(transform.forward * maxForce * direction * (right.GetComponent<Control>().accelator() + left.GetComponent<Control>().goback()) * Mathf.Cos(turn));
-    //    }
-    //    else
-    //    {
-    //        rb.velocity = transform.forward * direction * maxspeed;
-    //    }
-    //}
-
-    private void OnCollisionStay(Collision collision)
+    //偵測是否在地上
+    public void CheckGroundNormal()
     {
-        if (collision.gameObject.CompareTag("ground"))
-        {
-            maxForce = 15000;
+        Quaternion VStream = transform.GetComponent<Rigidbody>().rotation;
+        Quaternion HStream = transform.GetComponent<Rigidbody>().rotation;
+
+        RaycastHit frontHit;
+        RaycastHit rearHit;
+        RaycastHit rightHit;
+        RaycastHit leftHit;
+
+        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit, 1.1f);
+        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit, 1.1f);
+        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit, 1.1f);
+        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit, 1.1f);
+
+        print(frontHit.transform.gameObject.name);
+        if (hasfront || hasrear || hasright || hasleft)
             isGround = true;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("ground"))
-        {
-            Debug.Log("exit ground");
+        //Debug.DrawLine(transform.position + new Vector3(0, 0, 2), frontHit.point);
+        else
             isGround = false;
-            direction = 0;
-            rb.AddForce(-transform.up * rb.mass * 1.5f);
-            maxForce = 0;
-        }
-    }
+        //Debug.Log("no no no");
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("ground"))
-        {
-            transform.GetComponent<Rigidbody>().mass = 100;
-            if (left.GetComponent<Control>().Drift() && right.transform.localRotation.y != 0)
-            {
-                isDrifting = true;
-            }
-        }
+        //垂直方向與地面水平
+        Vector3 VNormal = (frontHit.normal + rearHit.normal).normalized;
+        Quaternion VQuaternion = Quaternion.FromToRotation(transform.up, VNormal);
+        Vector3 HNormal = (frontHit.normal + rearHit.normal).normalized;
+        Quaternion HQuaternion = Quaternion.FromToRotation(transform.up, HNormal);
+
+        //水平方向與地面水平
+        VStream = VQuaternion * VStream;
+        transform.GetComponent<Rigidbody>().MoveRotation(VStream);
+        HStream = HQuaternion * HStream;
+        transform.GetComponent<Rigidbody>().MoveRotation(HStream);
     }
 }

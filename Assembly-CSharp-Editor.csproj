@@ -62,20 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\HTC.UnityPlugin\PoseTracker\Editor\PoseEaserEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\PoseTracker\Editor\PoseFreezerEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\UPMRegistryTool\Editor\Scripts\Configs\RegistryToolSettings.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\UPMRegistryTool\Editor\Scripts\Utils\SimpleJSON.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\Utility\Attribute\Editor\CustomOrderedEnumAttributeDrawer.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\Utility\Attribute\Editor\FlagsFromEnumAttributeDrawer.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\VRModule\Editor\VRModuleManagerEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\VRModule\Modules\Editor\GoogleVRModuleEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\VRModule\Modules\Editor\OculusVRModuleEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\VRModule\Modules\Editor\SteamVRModuleEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\VRModule\Modules\Editor\UnityEngineVRModuleEditor.cs" />
-    <Compile Include="Assets\HTC.UnityPlugin\VRModule\Modules\Editor\WaveVRModuleEditor.cs" />
-    <None Include="Assets\HTC.UnityPlugin\UPMRegistryTool\Editor\Resources\LICENSE.txt" />
-    <None Include="Assets\HTC.UnityPlugin\UPMRegistryTool\Editor\Scripts\HTC.ViveInputUtility.Editor.asmref" />
+    <Compile Include="Assets\人物\Satomi 3d - Anime Style\Advance Unlit Shader\Editor\AdvanceUnlitCustomGUI.cs" />
     <Reference Include="UnityEngine">
       <HintPath>E:/Unity/2019.3.13f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
