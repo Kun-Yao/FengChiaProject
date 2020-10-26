@@ -53,7 +53,7 @@ public class ButtonEvents : MonoBehaviour
                         SceneManager.LoadScene(3);
                     }
                 }
-                else //if (currentObject.CompareTag("save"))
+                else if (currentObject.CompareTag("save"))
                 {
                     print(currentObject.name);
                     if (engine != null)

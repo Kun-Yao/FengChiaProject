@@ -6,12 +6,13 @@ public static class carevent
 {
     public static bool canMove = false;
 
-    public static void ResetCar(string CarName, Vector3 Position)
+    public static void ResetCar(string CarName, Vector3 Position, Vector3 forward)
     {
         string name = CarName;
         GameObject.Destroy(GameObject.Find(CarName));
         //GameObject clone = (GameObject)Resources.Load(CarName);
-        GameObject newG = GameObject.Instantiate((GameObject)Resources.Load("Prefabs/" + name), Position, Quaternion.Euler(0, 0, 0));
+        GameObject newG = GameObject.Instantiate((GameObject)Resources.Load("Prefabs/" + name), Position, Quaternion.Euler(0,0,0));
+        newG.transform.rotation = Quaternion.FromToRotation(newG.transform.forward, forward);
         newG.name = name;
         newG.GetComponent<CarController>().enabled = true;
         newG.transform.GetChild(0).gameObject.SetActive(true);

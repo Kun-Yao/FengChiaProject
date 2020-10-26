@@ -12,6 +12,7 @@ public class CarController : MonoBehaviour
 
     GameObject left;
     GameObject right;
+    GameObject checkPoints;
 
     int direction = 0;
     int driftDirection = 0;
@@ -53,8 +54,11 @@ public class CarController : MonoBehaviour
         }
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
+        rb.mass = 100;
         left = transform.GetChild(0).transform.GetChild(0).gameObject;
         right = transform.GetChild(0).transform.GetChild(1).gameObject;
+        checkPoints = GameObject.Find("CheckPoints");
+
     }
 
     IEnumerator wait()
@@ -73,7 +77,7 @@ public class CarController : MonoBehaviour
     void Update()
     {
         //按下空格起跳
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (left.GetComponent<Control>().Jump())
         {
             if (isGround)   //如果在地上
             {
@@ -82,7 +86,7 @@ public class CarController : MonoBehaviour
         }
 
         //按住空格，并且有水平输入：开始漂移
-        if (Input.GetKey(KeyCode.Space) && turn != 0)
+        if (left.GetComponent<Control>().Drift() && turn != 0)
         {
             //落地瞬间、不在漂移并且速度大于一定值时开始漂移
             if (isGround && !isGroundLastFrame && !isDrifting && rb.velocity.sqrMagnitude > 10)
@@ -92,7 +96,7 @@ public class CarController : MonoBehaviour
         }
 
         //放开空格：漂移结束
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (left.GetComponent<Control>().unDrift())
         {
             if (isDrifting)
             {
@@ -106,6 +110,10 @@ public class CarController : MonoBehaviour
     {
         //车转向
         CheckGroundNormal();        //检测是否在地面上，并且使车与地面保持水平
+        if (isGround == false)
+        {
+            return;
+        }
         TurnAround();                     //输入控制左右转向
 
         //漂移加速后/松开加油键 力递减
@@ -127,25 +135,20 @@ public class CarController : MonoBehaviour
 
     private void TurnAround()
     {
-        int driftDirection = 0;
-        //轉彎
-        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-        if(Mathf.Abs(turn) > 45)
-        {
-            turn = 45 * turn / Mathf.Abs(turn);
-        }
-        transform.Rotate(0, turn * direction, 0);
-
-        //if (!isDrifting)
-        //{
-        //    rb.AddForce(transform.right * (turn / Mathf.Abs(turn)) * Mathf.Abs(rb.velocity.z) * rb.mass);
-        //}
-
         //只能在移动时转弯
         if (rb.velocity.sqrMagnitude <= 0.1)
         {
             return;
         }
+
+        //轉彎
+        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+        print("turn = " + right.transform.localRotation.eulerAngles);
+        if(Mathf.Abs(turn) > 45)
+        {
+            turn = 45 * turn / Mathf.Abs(turn);
+        }
+        transform.Rotate(0, turn * direction, 0);
 
         //漂移时自带转向
         if (driftDirection == -1)
@@ -157,26 +160,19 @@ public class CarController : MonoBehaviour
             rotationStream = rotationStream * Quaternion.Euler(0, 40 * Time.fixedDeltaTime, 0);
         }
 
-        Quaternion deltaRotation = Quaternion.Euler(0, turn, 0);
+        Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
         rotationStream = rotationStream * deltaRotation;//局部坐标下旋转
-    }
-    private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    {
-        Debug.Log("break");
-        Debug.Log(gameObject.name);
-        string[] N = gameObject.name.Split('(');
-        carevent.ResetCar(N[0], checkPoint);
     }
 
     //计算加力方向
     public void CalculateForceDir()
     {
         //往前加力
-        if(right.GetComponent<Control>().accelator() > 0)
+        if (right.GetComponent<Control>().accelator() > 0.1)
         {
             direction = 1;
         }
-        else if (left.GetComponent<Control>().goback() > 0)//往后加力
+        else if (left.GetComponent<Control>().goback() > 0.1)//往后加力
         {
             direction = -1;
         }
@@ -187,7 +183,7 @@ public class CarController : MonoBehaviour
     private void GiveForce()
     {
         //计算合力
-        Vector3 tempForce = direction * maxForce * forceDir_Horizontal * right.GetComponent<Control>().accelator(); ;
+        Vector3 tempForce = maxForce * forceDir_Horizontal * (right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
 
         if (!isGround)  //如不在地上，则加重力
         {
@@ -195,6 +191,33 @@ public class CarController : MonoBehaviour
         }
 
         rb.AddForce(tempForce, ForceMode.Force);
+    }
+
+    //加速
+    public void Boost(float boostForce)
+    {
+        //按照漂移等级加速：1 / 1.1 / 1.2
+        currentForce = (1 + (int)driftLevel / 10) * boostForce;
+        rb.AddForce(currentForce * transform.forward, ForceMode.VelocityChange);
+    }
+
+    //力递减
+    public void ReduceForce()
+    {
+
+        float targetForce = currentForce;
+        if (isGround && (right.GetComponent<Control>().accelator() <= 0.1 || left.GetComponent<Control>().goback() <= 0.1))
+        {
+            direction = 0;
+            rb.velocity *= 0.98f;
+        }
+        else if (currentForce > maxForce)    //用于加速后回到普通状态
+        {
+            targetForce = maxForce;
+        }
+
+        //每秒60递减，可调
+        currentForce = Mathf.MoveTowards(currentForce, targetForce, 60 * Time.fixedDeltaTime);
     }
 
     void Jump()
@@ -226,30 +249,6 @@ public class CarController : MonoBehaviour
         driftDirection = 0;
         driftPower = 0;
         m_DriftOffset = Quaternion.identity;
-    }
-
-    //加速
-    public void Boost(float boostForce)
-    {
-        //按照漂移等级加速：1 / 1.1 / 1.2
-        currentForce = (1 + (int)driftLevel / 10) * boostForce;
-    }
-
-    //力递减
-    public void ReduceForce()
-    {
-        float targetForce = currentForce;
-        if (isGround && right.GetComponent<Control>().accelator() == 0)
-        {
-            targetForce = 0;
-        }
-        else if (currentForce > maxForce)    //用于加速后回到普通状态
-        {
-            targetForce = maxForce;
-        }
-
-        //每秒60递减，可调
-        currentForce = Mathf.MoveTowards(currentForce, targetForce, 60 * Time.fixedDeltaTime);
     }
 
     public void CalculateDriftingLevel()
@@ -293,9 +292,11 @@ public class CarController : MonoBehaviour
         }
 
         else
+        {
             isGround = false;
-        //Debug.Log("no no no");
-
+            direction = 0;
+        }
+            
         //垂直方向與地面水平
         Vector3 VNormal = (frontHit.normal + rearHit.normal).normalized;
         Quaternion VQuaternion = Quaternion.FromToRotation(transform.up, VNormal);
@@ -307,5 +308,14 @@ public class CarController : MonoBehaviour
         transform.GetComponent<Rigidbody>().MoveRotation(VStream);
         HStream = HQuaternion * HStream;
         transform.GetComponent<Rigidbody>().MoveRotation(HStream);
+    }
+
+    private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        Debug.Log("break");
+        Debug.Log(gameObject.name);
+        string[] N = gameObject.name.Split('(');
+        //ResetCar(車名, 生成位置, 車頭方向);
+        //carevent.ResetCar(N[0], checkPoint, );
     }
 }

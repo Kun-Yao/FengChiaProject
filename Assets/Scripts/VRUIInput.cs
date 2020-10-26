@@ -24,7 +24,7 @@ public class VRUIInput : MonoBehaviour
         if (button != null)
         {
             button.Select();
-            e.target.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            e.target.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
             Debug.Log("HandlePointerIn", e.target.gameObject);
         }
     }

@@ -53,6 +53,10 @@ public class Control : MonoBehaviour
         return LGas.axis;
     }
 
+    public bool Jump()
+    {
+        return drift.stateUp;
+    }
     public bool Drift()
     {
         return drift.state;
