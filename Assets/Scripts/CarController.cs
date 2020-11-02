@@ -37,6 +37,10 @@ public class CarController : MonoBehaviour
     private void Awake()
     {
         Reset.onStateUp += Relife;
+        if (carevent.canMove == false)
+        {
+            StartCoroutine(wait());
+        }
     }
 
     private void OnDestroy()
@@ -48,18 +52,17 @@ public class CarController : MonoBehaviour
     void Start()
     {
         currentForce = maxForce;
-        StartCoroutine(wait());
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
         rb.mass = 100;
-        left = transform.GetChild(0).transform.GetChild(0).gameObject;
-        right = transform.GetChild(0).transform.GetChild(1).gameObject;
+
         checkPoints = GameObject.Find("CheckPoints");
 
     }
 
     IEnumerator wait()
     {
+        print("start");
         yield return new WaitForSeconds(3);
         print("end");
         startRace();
@@ -73,6 +76,16 @@ public class CarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(left == null)
+        {
+            left = GameObject.Find("Controller (left)");
+        }
+
+        if(right == null)
+        {
+            right = GameObject.Find("Controller (right)");
+        }
+
         //按下空格起跳
         if (left.GetComponent<Control>().Jump())
         {
@@ -140,7 +153,7 @@ public class CarController : MonoBehaviour
 
         //轉彎
         turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-        print("turn = " + right.transform.localRotation.eulerAngles);
+        //print("turn = " + right.transform.localRotation.eulerAngles);
         if(Mathf.Abs(turn) > 45)
         {
             turn = 45 * turn / Mathf.Abs(turn);
