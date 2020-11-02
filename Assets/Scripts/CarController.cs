@@ -48,10 +48,7 @@ public class CarController : MonoBehaviour
     void Start()
     {
         currentForce = maxForce;
-        if(carevent.canMove == false)
-        {
-            StartCoroutine(wait());
-        }
+        StartCoroutine(wait());
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
         rb.mass = 100;

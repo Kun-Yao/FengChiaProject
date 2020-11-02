@@ -41,9 +41,21 @@ public class GameStart : MonoBehaviour
                 break;
             }
         }
-
+        print("canMove? " + carevent.canMove);
+        wait();
         //transform.GetChild(0).gameObject.SetActive(false);
     }
 
-    
+    IEnumerator wait()
+    {
+        yield return new WaitForSeconds(3000);
+        print("end");
+        startRace();
+    }
+
+    void startRace()
+    {
+        carevent.canMove = true;
+        print("canMove? " + carevent.canMove);
+    }
 }
