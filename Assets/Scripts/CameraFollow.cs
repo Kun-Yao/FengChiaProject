@@ -10,31 +10,46 @@ public class CameraFollow : MonoBehaviour
     Vector3 CurrCarPos;
     Vector3 LastCarPos;
     Vector3 PosOfCam;
+    Quaternion LastCarRot;
+    Quaternion CurrCarRot;
+
+
+    float distance;
+    float height;
+    float time;
+
     // Start is called before the first frame update
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
         kart = GameObject.Find(gameManager.CarName);
         Box = kart.GetComponent<BoxCollider>();
-        print("kart " + kart.name);
-        transform.position = kart.transform.position + new Vector3(0, Box.size.y, -Box.size.z);
-        CurrCarPos = kart.transform.position;
-        LastCarPos = CurrCarPos - new Vector3(0, 0, 3);
+        distance = 5;
+        height = Box.size.y / Box.size.z;
+        transform.position = kart.transform.position + new Vector3(0, height, -distance);
+        //transform.rotation = Quaternion.FromToRotation(transform.forward, transform.right);
+        print("forward " + kart.transform.forward + Vector3.forward);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        PosOfCam = LastCarPos;
-        transform.position = PosOfCam;
-        if (Mathf.Abs(CurrCarPos.z - LastCarPos.z) > 0.1f)
+        time += Time.deltaTime;
+        if (LastCarPos != kart.transform.position)
         {
             LastCarPos = CurrCarPos;
-            CurrCarPos = kart.transform.position;
+        }
+        if(time >= 0.02)
+        {
+            LastCarRot = CurrCarRot;
+            time = 0;
         }
         
-        print("curr " + CurrCarPos);
-        print("last " + LastCarPos);
+        CurrCarRot = kart.transform.rotation;
+        CurrCarPos = kart.transform.localPosition;
+        //transform.position = kart.transform.position + new Vector3(0, height, -distance);
+        transform.position = LastCarPos + (transform.up * Box.size.y) - (transform.forward * Box.size.z);
+        transform.rotation = LastCarRot;
 
     }
 

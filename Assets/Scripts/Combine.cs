@@ -127,10 +127,15 @@ public class Combine : MonoBehaviour
         rb.centerOfMass = box.center - new Vector3(0, box.center.y/2, 0);
         print(rb.centerOfMass);
 
+        engine.AddComponent<Outline>();
+        Outline ol = engine.GetComponent<Outline>();
+        ol.enabled = false;
+
         Vector3 PosOfCam = new Vector3(box.size.x / 2, box.size.y / 2, box.size.z / 2) + new Vector3(0, box.size.y / 2 + 0.25f, -(box.size.z / 2 + 2));
         GameObject t = Instantiate(cameraRig, PosOfCam, Quaternion.Euler(0, 0, 0), engine.transform);
         t.transform.SetAsFirstSibling();
         t.SetActive(false);
+        
         //選好賽車再啟動所有component
 
         engine.tag = "Player";
