@@ -128,8 +128,12 @@ public class Outline : MonoBehaviour {
       Bake();
     }
   }
+    private void FixedUpdate()
+    {
+        transform.Rotate(0, 1, 0);    
+    }
 
-  void Update() {
+    void Update() {
     if (needsUpdate) {
       needsUpdate = false;
 

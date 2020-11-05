@@ -39,6 +39,8 @@ public class CameraFollow : MonoBehaviour
         {
             LastCarPos = CurrCarPos;
         }
+
+        //每二個frame儲存一次賽車的角度
         if(time >= 0.02)
         {
             LastCarRot = CurrCarRot;

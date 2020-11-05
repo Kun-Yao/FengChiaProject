@@ -151,5 +151,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   engine: {fileID: 4626398873960976261}
-  panel: {fileID: 0}
-  dup: {fileID: 0}
+  demo: {fileID: 0}
+  control: {fileID: 0}

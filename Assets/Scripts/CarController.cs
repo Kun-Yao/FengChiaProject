@@ -95,36 +95,36 @@ public class CarController : MonoBehaviour
             }
         }
 
-        //按住空格，并且有水平输入：开始漂移
+        //按下飄移鍵，並且有轉向：開始漂移
         if (left.GetComponent<Control>().Drift() && turn != 0)
         {
-            //落地瞬间、不在漂移并且速度大于一定值时开始漂移
+            //落地瞬間、不在飄移並且速度大於一定值時開始飄移
             if (isGround && !isGroundLastFrame && !isDrifting && rb.velocity.sqrMagnitude > 10)
             {
-                StartDrift();   //开始漂移
+                StartDrift();   //開始飄移
             }
         }
 
-        //放开空格：漂移结束
+        //放開飄移鍵：飄移結束
         if (left.GetComponent<Control>().unDrift())
         {
             if (isDrifting)
             {
                 Boost(boostForce);//加速
-                StopDrift();//停止漂移
+                StopDrift();//停止飄移
             }
         }
     }
 
     private void FixedUpdate()
     {
-        //车转向
-        CheckGroundNormal();        //检测是否在地面上，并且使车与地面保持水平
+        //車子轉向
+        CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
         if (isGround == false)
         {
             return;
         }
-        TurnAround();                     //输入控制左右转向
+        TurnAround();                     //控制左右轉向
 
         //漂移加速后/松开加油键 力递减
         ReduceForce();
@@ -145,13 +145,13 @@ public class CarController : MonoBehaviour
 
     private void TurnAround()
     {
-        //只能在移动时转弯
+        //只能在移動時轉彎
         if (rb.velocity.sqrMagnitude <= 0.1)
         {
             return;
         }
 
-        //轉彎
+        //轉彎: 根據雙手控制器y軸旋轉量的平均值計算轉彎角度
         turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
         //print("turn = " + right.transform.localRotation.eulerAngles);
         if(Mathf.Abs(turn) > 45)
@@ -160,7 +160,7 @@ public class CarController : MonoBehaviour
         }
         transform.Rotate(0, turn * direction, 0);
 
-        //漂移时自带转向
+        //飄移角度
         if (driftDirection == -1)
         {
             rotationStream = rotationStream * Quaternion.Euler(0, -40 * Time.fixedDeltaTime, 0);
@@ -171,31 +171,32 @@ public class CarController : MonoBehaviour
         }
 
         Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
-        rotationStream = rotationStream * deltaRotation;//局部坐标下旋转
+        rotationStream = rotationStream * deltaRotation;
     }
 
-    //计算加力方向
+    //計算施力方向
     public void CalculateForceDir()
     {
-        //往前加力
+        //前進或倒退
         if (right.GetComponent<Control>().accelator() > 0.1)
         {
             direction = 1;
         }
-        else if (left.GetComponent<Control>().goback() > 0.1)//往后加力
+        else if (left.GetComponent<Control>().goback() > 0.1)
         {
             direction = -1;
         }
-
+        
+        //水平施力方向
         forceDir_Horizontal = m_DriftOffset * transform.forward;
     }
 
     private void GiveForce()
     {
-        //计算合力
+        //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
         Vector3 tempForce = maxForce * forceDir_Horizontal * (right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
 
-        if (!isGround)  //如不在地上，则加重力
+        if (!isGround)  //如不在地上，加重力
         {
             tempForce = rb.mass * 9.8f * Vector3.down;
         }
@@ -239,11 +240,11 @@ public class CarController : MonoBehaviour
     {
         isDrifting = true;
 
-        //根据水平输入决定漂移时车的朝向，因为合速度方向与车身方向不一致，所以为加力方向添加偏移
+        //根據水平輸入決定漂移時車的朝向，因為合速度方向與車身方向不一致，所以為加力方向添加偏移
         if (turn < 0)
         {
             driftDirection = -1;
-            //左漂移时，合速度方向为车头朝向的右前方，偏移具体数值需结合实际自己调试
+            //左漂移時，合速度方向為車頭朝向的右前方，偏移具體數值需結合實際調試
             m_DriftOffset = Quaternion.Euler(0f, 30, 0f);
         }
         else if (turn > 0)
@@ -285,11 +286,13 @@ public class CarController : MonoBehaviour
         Quaternion VStream = transform.GetComponent<Rigidbody>().rotation;
         Quaternion HStream = transform.GetComponent<Rigidbody>().rotation;
 
+        //在車底的四個方向設置laser
         RaycastHit frontHit;
         RaycastHit rearHit;
         RaycastHit rightHit;
         RaycastHit leftHit;
 
+        //laser是否接觸地面
         bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit, 1.1f);
         bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit, 1.1f);
         bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit, 1.1f);
@@ -310,12 +313,12 @@ public class CarController : MonoBehaviour
         //垂直方向與地面水平
         Vector3 VNormal = (frontHit.normal + rearHit.normal).normalized;
         Quaternion VQuaternion = Quaternion.FromToRotation(transform.up, VNormal);
-        Vector3 HNormal = (frontHit.normal + rearHit.normal).normalized;
-        Quaternion HQuaternion = Quaternion.FromToRotation(transform.up, HNormal);
-
-        //水平方向與地面水平
         VStream = VQuaternion * VStream;
         transform.GetComponent<Rigidbody>().MoveRotation(VStream);
+
+        //水平方向與地面水平
+        Vector3 HNormal = (frontHit.normal + rearHit.normal).normalized;
+        Quaternion HQuaternion = Quaternion.FromToRotation(transform.up, HNormal);
         HStream = HQuaternion * HStream;
         transform.GetComponent<Rigidbody>().MoveRotation(HStream);
     }
@@ -326,6 +329,6 @@ public class CarController : MonoBehaviour
         Debug.Log(gameObject.name);
         string[] N = gameObject.name.Split('(');
         //ResetCar(車名, 生成位置, 車頭方向);
-        //carevent.ResetCar(N[0], checkPoint, );
+        carevent.ResetCar(N[0], checkPoints.transform.position, checkPoints.transform.rotation.eulerAngles);
     }
 }

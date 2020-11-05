@@ -14,6 +14,7 @@ public class ChooseCar : MonoBehaviour
     string[] vs;
     Vector3 PosOfCar;
     int AxisY;
+    int AxisX;
     Ray ray;
     RaycastHit hit;
     GameObject currentObject;
@@ -40,7 +41,7 @@ public class ChooseCar : MonoBehaviour
     {
         ta = Resources.Load<TextAsset>("CarList/list");
         vs = ta.text.Split('\n');
-        PosOfCar = transform.position + new Vector3(-5, 0, 0);
+        PosOfCar = transform.position + new Vector3(-10, 0, 0);
 
         //刪除字串後面的enter，MAC要把這個迴圈註解
         for (int i = 0; i < vs.Length - 1; i++)
@@ -56,12 +57,14 @@ public class ChooseCar : MonoBehaviour
             {
                 print(j);
                 GameObject model = (GameObject)Instantiate(Resources.Load("Prefabs/" + vs[i+j]), PosOfCar, Quaternion.Euler(0, 0, 0), transform);
-                model.GetComponent<BoxCollider>().isTrigger = true;
-                //車子的X軸(待設定)
-                PosOfCar += new Vector3(5f, 0, 0);
+                BoxCollider box = model.GetComponent<BoxCollider>();
+                box.isTrigger = true;
+                //車子的X軸
+                PosOfCar += new Vector3(box.size.x*5, 0, 0);
             }
-            //車子的Y軸(待設定)
-            PosOfCar += new Vector3(-20, -2.5f, 0);
+            //車子的Y軸
+            PosOfCar = transform.position + new Vector3(-10, 0, 0);
+            PosOfCar += new Vector3(0, -5f, 0);
         }
     }
     
@@ -71,28 +74,47 @@ public class ChooseCar : MonoBehaviour
         SelectCar();
     }
 
-    //按下觸控板移動list
+    //按下觸控板移動list : y決定上下，x決定左右
     private void Position(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta)
     {
-        if(axis.y > 0)
+        if(axis.y > 0.5f)
         {
             AxisY = 1;
         }
-        else
+        else if(axis.y < -0.5f)
         {
             AxisY = -1;
+        }
+
+        if (axis.x > 0.5f)
+        {
+            AxisX = 1;
+        }
+        else if (axis.x < -0.5f)
+        {
+            AxisX = -1;
         }
     }
 
     private void PressRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        if (AxisY > 0 && transform.GetChild(vs.Length-1).transform.position.y <= cameraRig.transform.position.y)
+        print(transform.GetChild(0).transform.position + " " + vs.Length);
+        if (AxisY > 0 && transform.GetChild(vs.Length-2).transform.position.y <= cameraRig.transform.position.y)
         {
             transform.position += new Vector3(0, 0.5f, 0);
         }
         else if (AxisY < 0 && transform.GetChild(0).transform.position.y >= cameraRig.transform.position.y)
         {
             transform.position -= new Vector3(0, 0.5f, 0);
+        }
+
+        if (AxisX > 0 && transform.GetChild(0).transform.position.x <= cameraRig.transform.position.x)
+        {
+            transform.position += new Vector3(0.5f, 0, 0);
+        }
+        else if (AxisX < 0 && transform.GetChild(3).transform.position.x >= cameraRig.transform.position.x)
+        {
+            transform.position -= new Vector3(0.5f, 0, 0);
         }
     }
 
@@ -104,7 +126,10 @@ public class ChooseCar : MonoBehaviour
             if (right.GetComponent<Control>().bHit && !currentObject.CompareTag("scene"))
             {
                 if(lastObject != null)
+                {
                     lastObject.GetComponent<Outline>().enabled = false;
+                    lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+                }
                 currentObject.GetComponent<Outline>().enabled = true;
                 string[] split = currentObject.name.Split('(');
                 gameManager.CarName = split[0];

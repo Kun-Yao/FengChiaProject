@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\CarTest.cs" />
     <Compile Include="Assets\Scripts\CheckPoint.cs" />
     <Compile Include="Assets\Scripts\ChooseCar.cs" />
+    <Compile Include="Assets\Scripts\ChosenEffect.cs" />
     <Compile Include="Assets\Scripts\Combine.cs" />
     <Compile Include="Assets\Scripts\Control.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
