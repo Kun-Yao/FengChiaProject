@@ -34,6 +34,12 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if(kart == null)
+        {
+            kart = GameObject.Find(gameManager.CarName);
+            Box = kart.GetComponent<BoxCollider>();
+        }
+
         time += Time.deltaTime;
         if (LastCarPos != kart.transform.position)
         {

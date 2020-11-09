@@ -6,34 +6,43 @@ public class CheckPoint : MonoBehaviour
 {
 
     public int checkPoint;
-    GameObject car;
+    GameObject GM;
+    GameManager gameManager;
     float ruler;
 
     void OnTriggerEnter(Collider other)
     {
-
-        car = other.gameObject;
-        if (car.tag == "Player")
+        GM = GameObject.Find("Game");
+        gameManager = FindObjectOfType<GameManager>();
+        gameManager.relifePoint = checkPoint;
+        if (other.gameObject.tag == "Player")
         {
-
-            //if(car.GetComponent<Lap>().points.Peek() == checkPoint) {
-
-            //    car.GetComponent<Lap>().points.Pop();
-            //    if(checkPoint == 1)
-            //        car.GetComponent<Lap>().lap++;
-            //}
-
-            if (checkPoint == 4)
+            
+            if (GM.GetComponent<Lap>().points.Peek() == checkPoint)
             {
-                car.GetComponent<Lap>().point = 0;
-                ruler = Vector3.Distance(car.GetComponent<Lap>().array[0].transform.position, car.GetComponent<Lap>().array[checkPoint].transform.position);
+
+                GM.GetComponent<Lap>().points.Pop();
+                if (checkPoint == 0)
+                    GM.GetComponent<Lap>().lap++;
+            }
+
+            if(GM.GetComponent<Lap>().points.Count == 0)
+            {
+                print("Finish");
+            }
+
+
+            if (checkPoint == 23)
+            {
+                GM.GetComponent<Lap>().point = 0;
+                ruler = Vector3.Distance(GM.GetComponent<Lap>().array[0].transform.position, GM.GetComponent<Lap>().array[checkPoint].transform.position);
             }
             else
             {
-                car.GetComponent<Lap>().point = checkPoint + 1;
-                ruler = Vector3.Distance(car.GetComponent<Lap>().transform.position, car.GetComponent<Lap>().array[checkPoint + 1].transform.position);
+                GM.GetComponent<Lap>().point = checkPoint + 1;
+                ruler = Vector3.Distance(GM.GetComponent<Lap>().array[checkPoint].transform.position, GM.GetComponent<Lap>().array[checkPoint + 1].transform.position);
             }
-            car.GetComponent<Lap>().lastDis = (float)(Mathf.Round(ruler * 100000)) / 100000;
+            GM.GetComponent<Lap>().lastDis = (float)(Mathf.Round(ruler * 100000)) / 100000;
         }
 
         // if(checkPoint == 1) {

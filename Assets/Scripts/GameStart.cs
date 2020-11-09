@@ -74,16 +74,16 @@ public class GameStart : MonoBehaviour
         number.transform.GetChild(3).gameObject.SetActive(false);
     }
 
-    IEnumerator wait()
-    {
-        yield return new WaitForSeconds(3000);
-        print("end");
-        startRace();
-    }
+    //IEnumerator wait()
+    //{
+    //    yield return new WaitForSeconds(3000);
+    //    print("end");
+    //    startRace();
+    //}
 
-    void startRace()
-    {
-        carevent.canMove = true;
-        print("canMove? " + carevent.canMove);
-    }
+    //void startRace()
+    //{
+    //    GM.canMove = true;
+    //    print("canMove? " + GM.canMove);
+    //}
 }

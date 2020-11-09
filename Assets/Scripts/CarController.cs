@@ -12,13 +12,13 @@ public class CarController : MonoBehaviour
 
     GameObject left;
     GameObject right;
-    GameObject checkPoints;
+    GameManager GM;
 
     int direction = 0;
     int driftDirection = 0;
     int driftLevel = 0;
     float maxspeed = 60;
-    float maxForce = 15000;
+    float maxForce = 3000;
     float turn = 0;
     float driftPower = 0;
     float currentForce;
@@ -36,8 +36,9 @@ public class CarController : MonoBehaviour
 
     private void Awake()
     {
+        GM = FindObjectOfType<GameManager>();
         Reset.onStateUp += Relife;
-        if (carevent.canMove == false)
+        if (GM.canMove == false)
         {
             StartCoroutine(wait());
         }
@@ -55,9 +56,6 @@ public class CarController : MonoBehaviour
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
         rb.mass = 100;
-
-        checkPoints = GameObject.Find("CheckPoints");
-
     }
 
     IEnumerator wait()
@@ -70,21 +68,12 @@ public class CarController : MonoBehaviour
 
     void startRace()
     {
-        carevent.canMove = true;
+        GM.canMove = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(left == null)
-        {
-            left = GameObject.Find("Controller (left)");
-        }
-
-        if(right == null)
-        {
-            right = GameObject.Find("Controller (right)");
-        }
 
         //按下空格起跳
         if (left.GetComponent<Control>().Jump())
@@ -118,6 +107,23 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (left == null)
+        {
+            print("left is null");
+            left = GameObject.Find("Controller (left)");
+        }
+
+        if (right == null)
+        {
+            print("right is null");
+            right = GameObject.Find("Controller (right)");
+        }
+
+        if (GM == null)
+        {
+            GM = FindObjectOfType<GameManager>();
+        }
+
         //車子轉向
         CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
         if (isGround == false)
@@ -127,7 +133,7 @@ public class CarController : MonoBehaviour
         TurnAround();                     //控制左右轉向
 
         //漂移加速后/松开加油键 力递减
-        ReduceForce();
+        //ReduceForce();
 
         //如果在漂移
         if (isDrifting)
@@ -136,7 +142,7 @@ public class CarController : MonoBehaviour
         }
 
         //根据上述情况，进行最终的旋转和加力
-        rb.MoveRotation(rotationStream);
+        rb.MoveRotation(rotationStream.normalized);
         //计算力的方向
         CalculateForceDir();
         //移动
@@ -213,23 +219,23 @@ public class CarController : MonoBehaviour
     }
 
     //力递减
-    public void ReduceForce()
-    {
+    //public void ReduceForce()
+    //{
 
-        float targetForce = currentForce;
-        if (isGround && (right.GetComponent<Control>().accelator() <= 0.1 || left.GetComponent<Control>().goback() <= 0.1))
-        {
-            direction = 0;
-            rb.velocity *= 0.98f;
-        }
-        else if (currentForce > maxForce)    //用于加速后回到普通状态
-        {
-            targetForce = maxForce;
-        }
+    //    float targetForce = currentForce;
+    //    if (isGround && (right.GetComponent<Control>().accelator() <= 0.1 || left.GetComponent<Control>().goback() <= 0.1))
+    //    {
+    //        direction = 0;
+    //        rb.velocity *= 0.98f;
+    //    }
+    //    else if (currentForce > maxForce)    //用于加速后回到普通状态
+    //    {
+    //        targetForce = maxForce;
+    //    }
 
-        //每秒60递减，可调
-        currentForce = Mathf.MoveTowards(currentForce, targetForce, 60 * Time.fixedDeltaTime);
-    }
+    //    //每秒60递减，可调
+    //    currentForce = Mathf.MoveTowards(currentForce, targetForce, 60 * Time.fixedDeltaTime);
+    //}
 
     void Jump()
     {
@@ -293,10 +299,10 @@ public class CarController : MonoBehaviour
         RaycastHit leftHit;
 
         //laser是否接觸地面
-        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit, 1.1f);
-        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit, 1.1f);
-        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit, 1.1f);
-        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit, 1.1f);
+        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit);
+        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit);
+        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit);
+        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit);
 
         if (hasfront || hasrear || hasright || hasleft)
         {
@@ -321,6 +327,7 @@ public class CarController : MonoBehaviour
         Quaternion HQuaternion = Quaternion.FromToRotation(transform.up, HNormal);
         HStream = HQuaternion * HStream;
         transform.GetComponent<Rigidbody>().MoveRotation(HStream);
+
     }
 
     private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
@@ -329,6 +336,6 @@ public class CarController : MonoBehaviour
         Debug.Log(gameObject.name);
         string[] N = gameObject.name.Split('(');
         //ResetCar(車名, 生成位置, 車頭方向);
-        carevent.ResetCar(N[0], checkPoints.transform.position, checkPoints.transform.rotation.eulerAngles);
+        GM.ResetCar(N[0]);
     }
 }
