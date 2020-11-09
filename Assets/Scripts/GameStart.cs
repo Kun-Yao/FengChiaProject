@@ -7,6 +7,7 @@ public class GameStart : MonoBehaviour
     GameManager gameManager;
     GameObject StartLine;
     GameObject number;
+    GameObject player;
     BoxCollider box;
 
     void Awake()
@@ -24,7 +25,7 @@ public class GameStart : MonoBehaviour
             if (gameManager.getEmpty(i) == true)
             {
                 //生成賽車(player)
-                GameObject player = (GameObject)Instantiate(Resources.Load("Prefabs/" + gameManager.CarName), StartLine.transform.position, Quaternion.Euler(0, 0, 0));
+                player = (GameObject)Instantiate(Resources.Load("Prefabs/" + gameManager.CarName), StartLine.transform.position, Quaternion.Euler(0, 0, 0));
                 //player.transform.rotation = Quaternion.FromToRotation(player.transform.forward, StartLine.transform.forward);
                 string[] tmp = player.name.Split('(');
                 player.name = tmp[0];

@@ -38,10 +38,7 @@ public class CarController : MonoBehaviour
     {
         GM = FindObjectOfType<GameManager>();
         Reset.onStateUp += Relife;
-        if (GM.canMove == false)
-        {
-            StartCoroutine(wait());
-        }
+        
     }
 
     private void OnDestroy()
@@ -52,6 +49,11 @@ public class CarController : MonoBehaviour
 // Start is called before the first frame update
     void Start()
     {
+        print("進來了");
+        if (GM.canMove == false)
+        {
+            StartCoroutine(wait());
+        }
         currentForce = maxForce;
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
@@ -126,7 +128,7 @@ public class CarController : MonoBehaviour
 
         //車子轉向
         CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
-        if (isGround == false)
+        if (isGround == false || GM.canMove == false)
         {
             return;
         }
@@ -170,14 +172,17 @@ public class CarController : MonoBehaviour
         if (driftDirection == -1)
         {
             rotationStream = rotationStream * Quaternion.Euler(0, -40 * Time.fixedDeltaTime, 0);
+            Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
+            rotationStream = rotationStream * deltaRotation;
         }
         else if (driftDirection == 1)
         {
             rotationStream = rotationStream * Quaternion.Euler(0, 40 * Time.fixedDeltaTime, 0);
+            Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
+            rotationStream = rotationStream * deltaRotation;
         }
 
-        Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
-        rotationStream = rotationStream * deltaRotation;
+        
     }
 
     //計算施力方向
@@ -299,10 +304,10 @@ public class CarController : MonoBehaviour
         RaycastHit leftHit;
 
         //laser是否接觸地面
-        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit);
-        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit);
-        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit);
-        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit);
+        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit, 1.5f);
+        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit, 1.5f);
+        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit, 1.5f);
+        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit, 1.5f);
 
         if (hasfront || hasrear || hasright || hasleft)
         {
@@ -315,18 +320,10 @@ public class CarController : MonoBehaviour
             isGround = false;
             direction = 0;
         }
-            
-        //垂直方向與地面水平
-        Vector3 VNormal = (frontHit.normal + rearHit.normal).normalized;
-        Quaternion VQuaternion = Quaternion.FromToRotation(transform.up, VNormal);
-        VStream = VQuaternion * VStream;
-        transform.GetComponent<Rigidbody>().MoveRotation(VStream);
 
-        //水平方向與地面水平
-        Vector3 HNormal = (frontHit.normal + rearHit.normal).normalized;
-        Quaternion HQuaternion = Quaternion.FromToRotation(transform.up, HNormal);
-        HStream = HQuaternion * HStream;
-        transform.GetComponent<Rigidbody>().MoveRotation(HStream);
+        //float deltaV = frontHit.distance - rearHit.distance;
+        //float deltaH = rightHit.distance = leftHit.distance;
+        //transform.Rotate(Mathf.Atan(deltaV) * 180 / Mathf.PI, 0, Mathf.Atan(deltaH) * 180 / Mathf.PI);
 
     }
 

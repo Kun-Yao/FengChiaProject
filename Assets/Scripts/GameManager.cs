@@ -6,10 +6,10 @@ public class GameManager : MonoBehaviour
 {
     static GameManager instance;
 
-    public string CarName;
+    public string CarName = null;
     public int relifePoint;
-    private Vector3[] coordinate = { new Vector3(-15, 0, 0), new Vector3(-10, 0, 0), new Vector3(-5, 0, 0), new Vector3(0, 0, 0), new Vector3(5, 0, 0), new Vector3(10, 0, 0) };
     private bool[] isEmpty = new bool[6];
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -44,10 +44,10 @@ public class GameManager : MonoBehaviour
         return isEmpty[index];
     }
 
-    public Vector3 getLocation(int index)
-    {
-        return coordinate[index];
-    }
+    //public Vector3 getLocation(int index)
+    //{
+    //    return coordinate[index];
+    //}
 
     public bool canMove = false;
 

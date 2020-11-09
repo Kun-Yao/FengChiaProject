@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class ButtonEvents : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class ButtonEvents : MonoBehaviour
     private string txtName;
 
     public static GameObject currentObject;
+    GameManager GM;
+    Text Warning;
 
     private void Start()
     {
