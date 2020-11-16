@@ -26,7 +26,7 @@ public class CarController : MonoBehaviour
     bool isGroundLastFrame;
     bool isDrifting = false;
 
-    Vector3 driftDirection;
+    Vector3 H_Direction;
     Vector3 checkPoint;
     Vector3 forceDir;
     Vector3 tempForce;
@@ -59,8 +59,6 @@ public class CarController : MonoBehaviour
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
         rb.mass = 100;
-
-        tempForce = new Vector3(0, 0, 0);
     }
 
     IEnumerator wait()
@@ -147,7 +145,7 @@ public class CarController : MonoBehaviour
         }
 
         //根据上述情况，进行最终的旋转和加力
-        rb.MoveRotation(rotationStream.normalized);
+        //rb.MoveRotation(rotationStream.normalized);
         //计算力的方向
         CalculateForceDir();
         //移动
@@ -157,17 +155,19 @@ public class CarController : MonoBehaviour
     private void TurnAround()
     {
         //只能在移動時轉彎
-        if (rb.velocity.sqrMagnitude <= 0.1)
+        if (rb.velocity.sqrMagnitude <= 0.10)
         {
             return;
         }
 
         //轉彎: 根據雙手控制器y軸旋轉量的平均值計算轉彎角度
         turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
+
         if(Mathf.Abs(turn) > 45)
         {
             turn = 45 * turn / Mathf.Abs(turn);
         }
+        H_Direction = new Vector3(turn / Mathf.Abs(turn), 0, 0);
         transform.Rotate(0, turn * direction, 0);
 
         ////飄移角度
@@ -199,27 +199,37 @@ public class CarController : MonoBehaviour
         {
             direction = -1;
         }
+        else
+        {
+            direction = 0;
+            rb.velocity *= 0.98f;
+        }
 
         if (isDrifting)
-            forceDir = transform.forward * direction + driftDirection;
+            forceDir = transform.forward * direction + H_Direction;
         else
             forceDir = transform.forward * direction;
-        print(forceDir);
+        print(transform.forward + " " + H_Direction + " " + forceDir);
     }
 
     private void GiveForce()
     {
         //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
         if (isDrifting)
-            tempForce = tempForce / 2;
+            currentForce = currentForce / 2;
         else
-            tempForce = maxForce * forceDir * (right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
+            currentForce = maxForce;
+
+        tempForce = currentForce * forceDir * (right.GetComponent<Control>().accelator() + left.GetComponent<Control>().goback());
+
         if (!isGround)  //如不在地上，加重力
         {
             tempForce = rb.mass * 9.8f * Vector3.down;
         }
 
         rb.AddForce(tempForce, ForceMode.Force);
+        if (!isDrifting)
+            rb.AddForce(rb.velocity.z * rb.mass * H_Direction);
     }
 
     //加速
@@ -261,18 +271,18 @@ public class CarController : MonoBehaviour
         //根據水平輸入決定漂移時車的朝向，因為合速度方向與車身方向不一致，所以為加力方向添加偏移
         if (turn < -20)
         {
-            driftDirection = transform.right;
+            H_Direction = transform.right;
         }
         else if (turn > 20)
         {
-            driftDirection = -transform.right;
+            H_Direction = -transform.right;
         }
     }
 
     void StopDrift()
     {
         isDrifting = false;
-        driftDirection = new Vector3(0,0,0);
+        H_Direction = new Vector3(0,0,0);
         driftPower = 0;
     }
 

@@ -508,7 +508,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 1000
+  far clip plane: 1500
   field of view: 109.89345
   orthographic: 0
   orthographic size: 5
@@ -1412,7 +1412,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 64
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &6946718853371428653
 MonoBehaviour:
@@ -1427,8 +1427,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.93372107, g: 1, b: 0, a: 1}
-  outlineWidth: 6
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []

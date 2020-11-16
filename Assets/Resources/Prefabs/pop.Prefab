@@ -1082,12 +1082,12 @@ Rigidbody:
   m_GameObject: {fileID: 5103805618936480652}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.5
   m_AngularDrag: 0.05
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 64
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &4504350111618132361
 MonoBehaviour:
@@ -1102,8 +1102,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.91974485, g: 1, b: 0, a: 1}
-  outlineWidth: 6
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -1916,6 +1914,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7848916043645668129}
     m_Modifications:
+    - target: {fileID: 8976397534699540282, guid: 5e3d3fa3b4a8cd24494ebd84743ffe55,
+        type: 3}
+      propertyPath: far clip plane
+      value: 1500
+      objectReference: {fileID: 0}
     - target: {fileID: 8995267455781744676, guid: 5e3d3fa3b4a8cd24494ebd84743ffe55,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

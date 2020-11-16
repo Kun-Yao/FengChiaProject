@@ -292,8 +292,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 1, g: 0.99997795, b: 0, a: 1}
-  outlineWidth: 6
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -532,6 +530,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7848916043645668129}
     m_Modifications:
+    - target: {fileID: 8976397534699540282, guid: 5e3d3fa3b4a8cd24494ebd84743ffe55,
+        type: 3}
+      propertyPath: far clip plane
+      value: 1500
+      objectReference: {fileID: 0}
     - target: {fileID: 8995267455781744676, guid: 5e3d3fa3b4a8cd24494ebd84743ffe55,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

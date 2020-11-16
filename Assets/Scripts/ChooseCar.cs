@@ -55,12 +55,13 @@ public class ChooseCar : MonoBehaviour
             //一列四台
             for(int j = 0; j < 4 && i+j < vs.Length - 1; j++)
             {
-                print(j);
                 GameObject model = (GameObject)Instantiate(Resources.Load("Prefabs/" + vs[i+j]), PosOfCar, Quaternion.Euler(0, 0, 0), transform);
                 BoxCollider box = model.GetComponent<BoxCollider>();
                 box.isTrigger = true;
                 //車子的X軸
+                print(PosOfCar);
                 PosOfCar += new Vector3(box.size.x*5, 0, 0);
+
             }
             //車子的Y軸
             PosOfCar = transform.position + new Vector3(-10, 0, 0);
