@@ -22,7 +22,7 @@ public class ButtonEvents : MonoBehaviour
 
     private void Start()
     {
-        engine = GameObject.Find("Engine");
+        engine = GameObject.Find("Engine (1)");
     }
 
     private void Update()
@@ -61,6 +61,7 @@ public class ButtonEvents : MonoBehaviour
                     print(currentObject.name);
                     if (engine != null)
                     {
+                        engine.GetComponent<MeshRenderer>().enabled = false;
                         demo.SetActive(true);
                         control.SetActive(false);
                     }

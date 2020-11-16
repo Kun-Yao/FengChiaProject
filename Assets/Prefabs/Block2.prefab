@@ -108,9 +108,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TextureAtlasSizeInBlocks: 4
   blockType:
-    frontFaceTexture: 3
-    topFaceTexture: 3
-    backFaceTexture: 3
-    bottomFaceTexture: 3
-    leftFaceTexture: 3
-    rightFaceTexture: 3
+    frontFaceTexture: 1
+    topFaceTexture: 1
+    backFaceTexture: 1
+    bottomFaceTexture: 1
+    leftFaceTexture: 1
+    rightFaceTexture: 1

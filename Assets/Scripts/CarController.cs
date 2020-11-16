@@ -15,7 +15,6 @@ public class CarController : MonoBehaviour
     GameManager GM;
 
     int direction = 0;
-    int driftDirection = 0;
     int driftLevel = 0;
     float maxspeed = 60;
     float maxForce = 3000;
@@ -27,8 +26,10 @@ public class CarController : MonoBehaviour
     bool isGroundLastFrame;
     bool isDrifting = false;
 
+    Vector3 driftDirection;
     Vector3 checkPoint;
-    Vector3 forceDir_Horizontal;
+    Vector3 forceDir;
+    Vector3 tempForce;
     Rigidbody rb;
 
     Quaternion m_DriftOffset;
@@ -58,12 +59,14 @@ public class CarController : MonoBehaviour
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
         rb.mass = 100;
+
+        tempForce = new Vector3(0, 0, 0);
     }
 
     IEnumerator wait()
     {
         print("start");
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(5);
         print("end");
         startRace();
     }
@@ -101,7 +104,7 @@ public class CarController : MonoBehaviour
         {
             if (isDrifting)
             {
-                Boost(boostForce);//加速
+               //Boost(boostForce);//加速
                 StopDrift();//停止飄移
             }
         }
@@ -161,26 +164,25 @@ public class CarController : MonoBehaviour
 
         //轉彎: 根據雙手控制器y軸旋轉量的平均值計算轉彎角度
         turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-        //print("turn = " + right.transform.localRotation.eulerAngles);
         if(Mathf.Abs(turn) > 45)
         {
             turn = 45 * turn / Mathf.Abs(turn);
         }
         transform.Rotate(0, turn * direction, 0);
 
-        //飄移角度
-        if (driftDirection == -1)
-        {
-            rotationStream = rotationStream * Quaternion.Euler(0, -40 * Time.fixedDeltaTime, 0);
-            Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
-            rotationStream = rotationStream * deltaRotation;
-        }
-        else if (driftDirection == 1)
-        {
-            rotationStream = rotationStream * Quaternion.Euler(0, 40 * Time.fixedDeltaTime, 0);
-            Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
-            rotationStream = rotationStream * deltaRotation;
-        }
+        ////飄移角度
+        //if (driftDirection == -1)
+        //{
+        //    rotationStream = rotationStream * Quaternion.Euler(0, -40 * Time.fixedDeltaTime, 0);
+        //    Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
+        //    rotationStream = rotationStream * deltaRotation;
+        //}
+        //else if (driftDirection == 1)
+        //{
+        //    rotationStream = rotationStream * Quaternion.Euler(0, 40 * Time.fixedDeltaTime, 0);
+        //    Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
+        //    rotationStream = rotationStream * deltaRotation;
+        //}
 
         
     }
@@ -197,16 +199,21 @@ public class CarController : MonoBehaviour
         {
             direction = -1;
         }
-        
-        //水平施力方向
-        forceDir_Horizontal = m_DriftOffset * transform.forward;
+
+        if (isDrifting)
+            forceDir = transform.forward * direction + driftDirection;
+        else
+            forceDir = transform.forward * direction;
+        print(forceDir);
     }
 
     private void GiveForce()
     {
         //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
-        Vector3 tempForce = maxForce * forceDir_Horizontal * (right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
-
+        if (isDrifting)
+            tempForce = tempForce / 2;
+        else
+            tempForce = maxForce * forceDir * (right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
         if (!isGround)  //如不在地上，加重力
         {
             tempForce = rb.mass * 9.8f * Vector3.down;
@@ -252,25 +259,21 @@ public class CarController : MonoBehaviour
         isDrifting = true;
 
         //根據水平輸入決定漂移時車的朝向，因為合速度方向與車身方向不一致，所以為加力方向添加偏移
-        if (turn < 0)
+        if (turn < -20)
         {
-            driftDirection = -1;
-            //左漂移時，合速度方向為車頭朝向的右前方，偏移具體數值需結合實際調試
-            m_DriftOffset = Quaternion.Euler(0f, 30, 0f);
+            driftDirection = transform.right;
         }
-        else if (turn > 0)
+        else if (turn > 20)
         {
-            driftDirection = 1;
-            m_DriftOffset = Quaternion.Euler(0f, -30, 0f);
+            driftDirection = -transform.right;
         }
     }
 
     void StopDrift()
     {
         isDrifting = false;
-        driftDirection = 0;
+        driftDirection = new Vector3(0,0,0);
         driftPower = 0;
-        m_DriftOffset = Quaternion.identity;
     }
 
     public void CalculateDriftingLevel()
@@ -304,15 +307,14 @@ public class CarController : MonoBehaviour
         RaycastHit leftHit;
 
         //laser是否接觸地面
-        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit, 1.5f);
-        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit, 1.5f);
-        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit, 1.5f);
-        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit, 1.5f);
+        Physics.Raycast(transform.position + new Vector3(0, 0, 1f), -transform.up, out frontHit);
+        Physics.Raycast(transform.position + new Vector3(0, 0, -1f), -transform.up, out rearHit);
+        Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit);
+        Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit);
 
-        if (hasfront || hasrear || hasright || hasleft)
+        if (frontHit.distance < 1.1f || rearHit.distance < 1.1f || rightHit.distance < 1.1f || leftHit.distance < 1.1f)
         {
             isGround = true;
-            Debug.DrawLine(transform.position + new Vector3(0, 0, 2), frontHit.point);
         }
 
         else
@@ -321,9 +323,9 @@ public class CarController : MonoBehaviour
             direction = 0;
         }
 
-        //float deltaV = frontHit.distance - rearHit.distance;
-        //float deltaH = rightHit.distance = leftHit.distance;
-        //transform.Rotate(Mathf.Atan(deltaV) * 180 / Mathf.PI, 0, Mathf.Atan(deltaH) * 180 / Mathf.PI);
+        float deltaV = frontHit.distance - rearHit.distance;
+        float deltaH = rightHit.distance - leftHit.distance;
+        transform.Rotate(Mathf.Rad2Deg * Mathf.Atan(deltaV/2), 0, Mathf.Rad2Deg * Mathf.Atan(deltaH/2) * 180 / Mathf.PI);
 
     }
 

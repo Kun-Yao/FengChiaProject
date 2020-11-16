@@ -16,7 +16,7 @@ public class RotanCamera : MonoBehaviour
     private void Awake()
     {
         touchPos.onAxis += Position;
-        engine = GameObject.Find("Engine");
+        engine = GameObject.Find("Engine (1)");
         canvas = GameObject.Find("Canvas");
         arrow = GameObject.Find("Waypoint Arrow");
         //press.onStateUp += PressRelease;
