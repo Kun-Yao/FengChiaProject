@@ -16,9 +16,10 @@ public class CarController : MonoBehaviour
 
     int direction = 0;
     int driftLevel = 0;
-    float maxspeed = 60;
+    float maxspeed = 150;
     float maxForce = 3000;
     float turn = 0;
+    float lastTurn = 0;
     float driftPower = 0;
     float currentForce;
     float boostForce;
@@ -50,7 +51,6 @@ public class CarController : MonoBehaviour
 // Start is called before the first frame update
     void Start()
     {
-        print("進來了");
         if (GM.canMove == false)
         {
             StartCoroutine(wait());
@@ -63,9 +63,7 @@ public class CarController : MonoBehaviour
 
     IEnumerator wait()
     {
-        print("start");
         yield return new WaitForSeconds(5);
-        print("end");
         startRace();
     }
 
@@ -127,12 +125,13 @@ public class CarController : MonoBehaviour
             GM = FindObjectOfType<GameManager>();
         }
 
-        //車子轉向
+        
         CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
         if (isGround == false || GM.canMove == false)
         {
             return;
         }
+
         TurnAround();                     //控制左右轉向
 
         //漂移加速后/松开加油键 力递减
@@ -154,6 +153,7 @@ public class CarController : MonoBehaviour
 
     private void TurnAround()
     {
+        
         //只能在移動時轉彎
         if (rb.velocity.sqrMagnitude <= 0.10)
         {
@@ -167,7 +167,15 @@ public class CarController : MonoBehaviour
         {
             turn = 45 * turn / Mathf.Abs(turn);
         }
-        H_Direction = new Vector3(turn / Mathf.Abs(turn), 0, 0);
+
+        if (Mathf.Abs(turn) > 5)
+        {
+            H_Direction = new Vector3(turn / Mathf.Abs(turn), 0, 0);
+        }
+        else
+        {
+            H_Direction = new Vector3(0, 0, 0);
+        }
         transform.Rotate(0, turn * direction, 0);
 
         ////飄移角度
@@ -206,21 +214,24 @@ public class CarController : MonoBehaviour
         }
 
         if (isDrifting)
-            forceDir = transform.forward * direction + H_Direction;
+            forceDir = transform.forward * direction * Mathf.Cos(turn) + H_Direction;
         else
-            forceDir = transform.forward * direction;
-        print(transform.forward + " " + H_Direction + " " + forceDir);
+            forceDir = transform.forward * direction * Mathf.Cos(turn);
     }
 
     private void GiveForce()
     {
         //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
-        if (isDrifting)
+        if(rb.velocity.z > maxspeed)
+        {
+            currentForce = 0;
+        }
+        else if (isDrifting)
             currentForce = currentForce / 2;
         else
             currentForce = maxForce;
 
-        tempForce = currentForce * forceDir * (right.GetComponent<Control>().accelator() + left.GetComponent<Control>().goback());
+        tempForce = currentForce * forceDir * Mathf.Abs(right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
 
         if (!isGround)  //如不在地上，加重力
         {
@@ -228,7 +239,7 @@ public class CarController : MonoBehaviour
         }
 
         rb.AddForce(tempForce, ForceMode.Force);
-        if (!isDrifting)
+        if (!isDrifting && Mathf.Abs(turn) > 5)
             rb.AddForce(rb.velocity.z * rb.mass * H_Direction);
     }
 

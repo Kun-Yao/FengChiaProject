@@ -7,6 +7,8 @@ public class CameraFollow : MonoBehaviour
     GameManager gameManager;
     BoxCollider Box;
     GameObject kart;
+    GameObject left;
+    GameObject right;
     Vector3 CurrCarPos;
     Vector3 LastCarPos;
     Vector3 PosOfCam;
@@ -40,6 +42,16 @@ public class CameraFollow : MonoBehaviour
             Box = kart.GetComponent<BoxCollider>();
         }
 
+        if (left == null)
+        {
+            left = GameObject.Find("Controller (left)");
+        }
+
+        if (right == null)
+        {
+            right = GameObject.Find("Controller (right)");
+        }
+
         time += Time.deltaTime;
         if (LastCarPos != kart.transform.position)
         {
@@ -56,9 +68,18 @@ public class CameraFollow : MonoBehaviour
         CurrCarRot = kart.transform.rotation;
         CurrCarPos = kart.transform.localPosition;
         //transform.position = kart.transform.position + new Vector3(0, height, -distance);
-        transform.position = LastCarPos + (transform.up * Box.size.y) - (transform.forward * Box.size.z);
-        transform.rotation = LastCarRot;
-
+        if(left.transform.localRotation.eulerAngles.y + right.transform.localRotation.eulerAngles.y < 5)
+        {
+            transform.position = kart.transform.position + (transform.up * Box.size.y) - (transform.forward * Box.size.z);
+            transform.rotation = kart.transform.rotation;
+        }
+        else
+        {
+            transform.position = LastCarPos + (transform.up * Box.size.y) - (transform.forward * Box.size.z);
+            transform.rotation = LastCarRot;
+        }
+        
+        
     }
 
 }

@@ -37,7 +37,7 @@ public class Lap : MonoBehaviour
             points.Push(0);
         }
 
-        car = GameObject.FindWithTag("player");
+        car = GameObject.FindWithTag("Player");
 
         //初始化逆向
         cp = GameObject.Find("CheckPoints");
@@ -64,7 +64,8 @@ public class Lap : MonoBehaviour
     {
         
         print(point);
-
+        if (car == null)
+            car = GameObject.FindWithTag("Player");
         newDis = Vector3.Distance(car.transform.position, array[point].transform.position);
         newDis = (float)(Mathf.Round(newDis * 100000)) / 100000;
 
