@@ -127,9 +127,10 @@ public class Combine : MonoBehaviour
         rb.mass *= mass;
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX;
         rb.centerOfMass = box.center - new Vector3(0, box.center.y/2, 0);
         print(rb.centerOfMass);
-
+        
         engine.AddComponent<Outline>();
         Outline ol = engine.GetComponent<Outline>();
         ol.enabled = false;

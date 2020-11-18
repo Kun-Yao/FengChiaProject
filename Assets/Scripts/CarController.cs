@@ -39,7 +39,7 @@ public class CarController : MonoBehaviour
     private void Awake()
     {
         GM = FindObjectOfType<GameManager>();
-        Reset.onStateUp += Relife;
+        
         
     }
 
@@ -70,6 +70,7 @@ public class CarController : MonoBehaviour
     void startRace()
     {
         GM.canMove = true;
+        Reset.onStateUp += Relife;
     }
 
     // Update is called once per frame
@@ -125,9 +126,13 @@ public class CarController : MonoBehaviour
             GM = FindObjectOfType<GameManager>();
         }
 
-        
+        if(GM.canMove == false)
+        {
+            return;
+        }
+
         CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
-        if (isGround == false || GM.canMove == false)
+        if (isGround == false)
         {
             return;
         }
@@ -214,23 +219,28 @@ public class CarController : MonoBehaviour
         }
 
         if (isDrifting)
-            forceDir = transform.forward * direction * Mathf.Cos(turn) + H_Direction;
+            forceDir = transform.forward * direction * Mathf.Cos(turn);
         else
             forceDir = transform.forward * direction * Mathf.Cos(turn);
     }
 
     private void GiveForce()
     {
-        //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
+        
         if(rb.velocity.z > maxspeed)
         {
             currentForce = 0;
         }
         else if (isDrifting)
+        {
             currentForce = currentForce / 2;
+        }
         else
+        {
             currentForce = maxForce;
-
+        }
+        
+        //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
         tempForce = currentForce * forceDir * Mathf.Abs(right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
 
         if (!isGround)  //如不在地上，加重力
@@ -240,8 +250,10 @@ public class CarController : MonoBehaviour
 
         rb.AddForce(tempForce, ForceMode.Force);
 
-        if (!isDrifting && Mathf.Abs(turn) > 5)
-            rb.AddForce(rb.velocity.magnitude*rb.velocity.magnitude * rb.mass * H_Direction);
+        if(!isDrifting && rb.velocity.x > 5)
+        {
+            rb.AddForce(-1 * rb.velocity.x * rb.velocity.x * transform.right);
+        }
     }
 
     //加速
@@ -333,6 +345,7 @@ public class CarController : MonoBehaviour
         Physics.Raycast(transform.position + new Vector3(0, 0, -1f), -transform.up, out rearHit);
         Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit);
         Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit);
+
 
         if (frontHit.distance < 1.1f || rearHit.distance < 1.1f || rightHit.distance < 1.1f || leftHit.distance < 1.1f)
         {

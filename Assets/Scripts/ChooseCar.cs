@@ -53,6 +53,7 @@ public class ChooseCar : MonoBehaviour
         for (int i = 0; i < vs.Length - 1; i++ )
         {
             GameObject model = (GameObject)Instantiate(Resources.Load("Prefabs/" + vs[i]), PosOfCar, Quaternion.Euler(0, 0, 0), transform);
+            model.transform.position += model.transform.position - model.GetComponent<MeshRenderer>().bounds.center;
             BoxCollider box = model.GetComponent<BoxCollider>();
             box.isTrigger = true;
             //車子的X軸
@@ -67,7 +68,7 @@ public class ChooseCar : MonoBehaviour
         SelectCar();
     }
 
-    //按下觸控板移動list : y決定上下，x決定左右
+    //按下觸控板左右移動list
     private void Position(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta)
     {
         if (axis.x > 0.5f)
@@ -82,11 +83,11 @@ public class ChooseCar : MonoBehaviour
 
     private void PressRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        if (AxisX > 0 && transform.GetChild(0).transform.position.x < cameraRig.transform.position.x)
+        if (AxisX > 0 && transform.GetChild(0).transform.position.x < cameraRig.transform.position.x-5)
         {
             transform.position += new Vector3(20, 0, 0);
         }
-        else if (AxisX < 0 && transform.GetChild(vs.Length-2).transform.position.x > cameraRig.transform.position.x)
+        else if (AxisX < 0 && transform.GetChild(vs.Length-2).transform.position.x > cameraRig.transform.position.x+5)
         {
             transform.position -= new Vector3(20, 0, 0);
         }
