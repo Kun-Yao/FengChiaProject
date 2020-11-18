@@ -239,8 +239,9 @@ public class CarController : MonoBehaviour
         }
 
         rb.AddForce(tempForce, ForceMode.Force);
+
         if (!isDrifting && Mathf.Abs(turn) > 5)
-            rb.AddForce(rb.velocity.z * rb.mass * H_Direction);
+            rb.AddForce(rb.velocity.magnitude*rb.velocity.magnitude * rb.mass * H_Direction);
     }
 
     //加速
