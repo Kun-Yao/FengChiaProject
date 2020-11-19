@@ -80,7 +80,7 @@ public class Combine : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            //mass += 50;
+            mass += 50;
             GameObject.Destroy(child.gameObject);
         }
 
@@ -123,7 +123,7 @@ public class Combine : MonoBehaviour
 
         engine.AddComponent<Rigidbody>();
         Rigidbody rb = engine.GetComponent<Rigidbody>();
-        //rb.mass *= mass;
+        rb.mass += mass;
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         rb.centerOfMass = box.center - new Vector3(0, box.center.y/2, 0);

@@ -53,7 +53,6 @@ public class ChooseCar : MonoBehaviour
         for (int i = 0; i < vs.Length - 1; i++ )
         {
             GameObject model = (GameObject)Instantiate(Resources.Load("Prefabs/" + vs[i]), PosOfCar, Quaternion.Euler(0, 0, 0), transform);
-            model.transform.position += model.transform.position - model.GetComponent<MeshRenderer>().bounds.center;
             BoxCollider box = model.GetComponent<BoxCollider>();
             box.isTrigger = true;
             //車子的X軸

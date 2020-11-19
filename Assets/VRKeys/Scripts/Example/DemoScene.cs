@@ -151,6 +151,8 @@ namespace VRKeys {
             this.gameObject.SetActive(false);
             control.SetActive(true);
             combine.GetComponent<MeshRenderer>().enabled = true;
+            foreach (Transform child in combine.transform)
+                child.GetComponent<MeshRenderer>().enabled = true;
 
             GameObject camera = GameObject.Find("Main Camera");
             GameObject.Destroy(camera);

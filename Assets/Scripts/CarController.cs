@@ -23,6 +23,8 @@ public class CarController : MonoBehaviour
     float driftPower = 0;
     float currentForce;
     float boostForce;
+    float RightRotationY;
+    float LeftRotationY;
     bool isGround = false;
     bool isGroundLastFrame;
     bool isDrifting = false;
@@ -166,17 +168,22 @@ public class CarController : MonoBehaviour
         }
 
         //轉彎: 根據雙手控制器y軸旋轉量的平均值計算轉彎角度
-        turn = (right.transform.localEulerAngles.y + left.transform.localEulerAngles.y) / 2;
-        print("turn = "+turn);
-        if(Mathf.Abs(turn) > 45)
+        RightRotationY = checkAngle(right.transform.localEulerAngles.y);
+        LeftRotationY = checkAngle(left.transform.localEulerAngles.y);
+        turn = (RightRotationY + LeftRotationY) / 2 / 100;
+
+        if(Mathf.Abs(turn) > 0.45)
         {
-            turn = 45 * turn / Mathf.Abs(turn);
+            turn = 0.45f * turn / Mathf.Abs(turn);
         }
 
-        if (Mathf.Abs(turn) > 5)
+        if (turn > 0.05)
         {
-            print("turning");
-            H_Direction = new Vector3(turn / Mathf.Abs(turn), 0, 0);
+            H_Direction = transform.right;
+        }
+        else if(turn < -0.05)
+        {
+            H_Direction = -transform.right;
         }
         else
         {
@@ -199,6 +206,13 @@ public class CarController : MonoBehaviour
         //    rotationStream = rotationStream * deltaRotation;
         //}
 
+        //if(right.GetComponent<Control>().accelator() > 0 || left.GetComponent<Control>().goback() > 0)
+        //{
+        //    Vector3 localVelocity = transform.InverseTransformDirection(rb.velocity);
+        //    localVelocity.z = 0;
+        //    Vector3 velocityDrag = transform.TransformVector(localVelocity);
+        //    rb.AddForce(-velocityDrag * 100);
+        //}
         
     }
 
@@ -217,7 +231,7 @@ public class CarController : MonoBehaviour
         else
         {
             direction = 0;
-            rb.velocity *= 0.98f;
+            rb.velocity *= 0.9f;
         }
 
         if (isDrifting)
@@ -252,12 +266,15 @@ public class CarController : MonoBehaviour
 
         rb.AddForce(tempForce, ForceMode.Force);
 
-        if(!isDrifting && rb.velocity.x > 5)
+        
+        if(Mathf.Abs(rb.velocity.x) > Mathf.Abs(rb.velocity.z) && !isDrifting)
         {
+            print("轉彎囉");
             rb.AddForce(rb.mass * rb.velocity.z * Mathf.Sin(2*turn) / (0.02f * Mathf.Sin(90-turn)) * H_Direction);
         }
+        
     }
-
+    
     //加速
     public void Boost(float boostForce)
     {
@@ -373,5 +390,18 @@ public class CarController : MonoBehaviour
         string[] N = gameObject.name.Split('(');
         //ResetCar(車名, 生成位置, 車頭方向);
         GM.ResetCar(N[0]);
+    }
+
+    private float checkAngle(float angle)
+    {
+        float finalAngle = angle - 180;
+        if (finalAngle > 0)
+        {
+            return finalAngle - 180;
+        }
+        else
+        {
+            return finalAngle + 180;
+        }
     }
 }

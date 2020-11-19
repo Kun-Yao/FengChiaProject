@@ -144,10 +144,10 @@ MonoBehaviour:
     y: 30
     width: 1366
     height: 635
-  m_MinSize: {x: 911, y: 442}
+  m_MinSize: {x: 736, y: 442}
   m_MaxSize: {x: 22006, y: 10021}
   vertical: 0
-  controlID: 117
+  controlID: 41
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: InspectorWindow
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -240,14 +240,14 @@ MonoBehaviour:
     y: 0
     width: 415
     height: 635
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
-  m_ActualView: {fileID: 15}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 15}
   - {fileID: 13}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -356,20 +356,20 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: a8c40100
-      m_LastClickedID: 115880
-      m_ExpandedIDs: 1aa0f6ff20c4010024c401005cc4010062c40100a8c40100fec401002cc50100
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: faf8f6ff0e58f7ffe60cf8ffa266f8ff1e1df9ffae73f9ff342afaffc6a4faff6050fbff065afbff64b5fbff70fbffff4ebd0000da2b01006c2c01000a9101009c91010028f5010050030200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: ogojigpj
-        m_OriginalName: ogojigpj
+        m_Name: Count
+        m_OriginalName: Count
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: -467098
+        m_UserData: 132332
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
         m_OriginalEventType: 0
@@ -459,20 +459,20 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Resources/Prefabs
+    - Assets/Scenes
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Resources/Prefabs
+  - Assets/Scenes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\G-Print\Documents\GitHub\vrCarGame
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 083f0000
-    m_LastClickedID: 16136
-    m_ExpandedIDs: 00000000283e00002a3e00002c3e00002e3e0000303e0000323e0000343e0000363e0000383e00003a3e00003c3e00003e3e0000403e0000423e0000443e0000463e0000483e00004a3e00004c3e00004e3e0000503e000000ca9a3b
+    m_SelectedIDs: 6e3b0000
+    m_LastClickedID: 15214
+    m_ExpandedIDs: 00000000fe3a0000003b0000023b0000043b0000063b0000083b00000a3b00000c3b00000e3b0000103b0000123b0000143b0000163b0000183b00001a3b00001c3b00001e3b0000203b0000223b0000243b0000263b000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -500,7 +500,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000283e00002a3e00002c3e00002e3e0000303e0000323e0000343e0000363e0000383e00003a3e00003c3e00003e3e0000403e0000423e0000443e0000463e0000483e00004a3e00004c3e00004e3e0000503e0000
+    m_ExpandedIDs: 00000000fe3a0000003b0000023b0000043b0000063b0000083b00000a3b00000c3b00000e3b0000103b0000123b0000143b0000163b0000183b00001a3b00001c3b00001e3b0000203b0000223b0000243b0000263b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -677,16 +677,16 @@ MonoBehaviour:
   m_ShowContextualTools: 0
   m_WindowGUID: 49ad5df380962e443aadfcb07d0e66ee
   m_Gizmos: 1
-  m_SceneIsLit: 0
+  m_SceneIsLit: 1
   m_SceneLighting: 1
   m_2DMode: 0
   m_isRotationLocked: 0
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.001473546, y: -3.6748207, z: 0.00063085556}
+    m_Target: {x: 1182.335, y: 101.59448, z: 2201.976}
     speed: 2
-    m_Value: {x: -0.001473546, y: -3.6748207, z: 0.00063085556}
+    m_Value: {x: 1182.335, y: 101.59448, z: 2201.976}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -699,7 +699,7 @@ MonoBehaviour:
   m_SceneViewState:
     showFog: 1
     showMaterialUpdate: 0
-    showSkybox: 0
+    showSkybox: 1
     showFlares: 1
     showImageEffects: 1
     showParticleSystems: 1
@@ -732,13 +732,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.0047253584, y: 0.9928488, z: -0.04203412, w: -0.111864716}
+    m_Target: {x: -0.014744948, y: -0.96703017, z: 0.2477574, w: -0.057501834}
     speed: 2
-    m_Value: {x: -0.0047252364, y: 0.9928231, z: -0.04203303, w: -0.111861825}
+    m_Value: {x: -0.0147445435, y: -0.96700364, z: 0.24775061, w: -0.057500258}
   m_Size:
-    m_Target: 2.6789548
+    m_Target: 194.70905
     speed: 2
-    m_Value: 2.6789548
+    m_Value: 194.70905
   m_Ortho:
     m_Target: 0
     speed: 2

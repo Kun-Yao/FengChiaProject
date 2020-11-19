@@ -62,6 +62,8 @@ public class ButtonEvents : MonoBehaviour
                     if (engine != null)
                     {
                         engine.GetComponent<MeshRenderer>().enabled = false;
+                        foreach(Transform child in engine.transform)
+                            child.GetComponent<MeshRenderer>().enabled = false;
                         demo.SetActive(true);
                         control.SetActive(false);
                     }
