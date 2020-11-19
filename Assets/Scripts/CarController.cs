@@ -166,8 +166,8 @@ public class CarController : MonoBehaviour
         }
 
         //轉彎: 根據雙手控制器y軸旋轉量的平均值計算轉彎角度
-        turn = (right.transform.localRotation.y + left.transform.localRotation.y) / 2;
-
+        turn = (right.transform.localEulerAngles.y + left.transform.localEulerAngles.y) / 2;
+        print("turn = "+turn);
         if(Mathf.Abs(turn) > 45)
         {
             turn = 45 * turn / Mathf.Abs(turn);
@@ -175,12 +175,14 @@ public class CarController : MonoBehaviour
 
         if (Mathf.Abs(turn) > 5)
         {
+            print("turning");
             H_Direction = new Vector3(turn / Mathf.Abs(turn), 0, 0);
         }
         else
         {
             H_Direction = new Vector3(0, 0, 0);
         }
+        
         transform.Rotate(0, turn * direction, 0);
 
         ////飄移角度
@@ -252,7 +254,7 @@ public class CarController : MonoBehaviour
 
         if(!isDrifting && rb.velocity.x > 5)
         {
-            rb.AddForce(-1 * rb.velocity.x * rb.velocity.x * transform.right);
+            rb.AddForce(rb.mass * rb.velocity.z * Mathf.Sin(2*turn) / (0.02f * Mathf.Sin(90-turn)) * H_Direction);
         }
     }
 

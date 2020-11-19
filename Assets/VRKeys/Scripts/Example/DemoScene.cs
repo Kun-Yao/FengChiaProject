@@ -141,6 +141,8 @@ namespace VRKeys {
             sw.WriteLine(text);
             sw.Close();
 
+            combine.GetComponent<MeshRenderer>().enabled = true;
+
             combine.GetComponent<Combine>().fuck();
         }
 
