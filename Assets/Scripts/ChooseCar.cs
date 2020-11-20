@@ -15,6 +15,7 @@ public class ChooseCar : MonoBehaviour
     Vector3 PosOfCar;
     int AxisY;
     int AxisX;
+    int now;
     Ray ray;
     RaycastHit hit;
     GameObject currentObject;
@@ -59,6 +60,7 @@ public class ChooseCar : MonoBehaviour
             print(PosOfCar);
             PosOfCar += new Vector3(20, 0, 0);
         }
+        now = 0;
     }
     
 
@@ -72,11 +74,11 @@ public class ChooseCar : MonoBehaviour
     {
         if (axis.x > 0.5f)
         {
-            AxisX = 1;
+            AxisX = -1;
         }
         else if (axis.x < -0.5f)
         {
-            AxisX = -1;
+            AxisX = 1;
         }
     }
 

@@ -14,11 +14,10 @@ public class CheckPoint : MonoBehaviour
     {
         GM = GameObject.Find("Game");
         gameManager = FindObjectOfType<GameManager>();
-        gameManager.relifePoint = checkPoint;
 
         if (other.gameObject.tag == "Player")
         {
-            
+            gameManager.relifePoint = checkPoint;
             if (GM.GetComponent<Lap>().points.Peek() == checkPoint)
             {
 

@@ -1,267 +1,252 @@
-﻿//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-//public class CarTest : MonoBehaviour
-//{
-//    bool isGround;
-//    bool isGroundLastFrame;
-//    bool isDrifting;
-//    float boostForce;
+public class CarTest : MonoBehaviour
+{
+    [SerializeField] Rigidbody rigidbody = null;
 
-//    Rigidbody kartRigidbody;
-//    // Start is called before the first frame update
-//    void Start()
-//    {
-//        kartRigidbody = transform.GetComponent<Rigidbody>();
-//    }
+    //input
+    float inputPush;
+    float inputTorque;
 
-//    // Update is called once per frame
-//    void Update()
-//    {
-//        //按下空格起跳
-//        if (Input.GetKeyDown(KeyCode.Space))
-//        {
-//            if (isGround)   //如果在地上
-//            {
-//                Jump();
-//            }
-//        }
+    [Header("Suspension")]
+    //懸吊點位置
+    [SerializeField] Vector3 suspensionPoint = new Vector3(1.8f, 0, 1f);
+    //懸吊長度
+    [SerializeField] float suspensionStrech = 1;
+    //地面的layer
+    [SerializeField] LayerMask groundLayer = 0;
+    //儲存懸吊資料
+    Suspensions[] suspensions = new Suspensions[4];
+    struct Suspensions
+    {
+        public Transform suspensions;
+        public float lastLenght;
 
-//        //按住空格，并且有水平输入：开始漂移
-//        if (Input.GetKey(KeyCode.Space) && h_Input != 0)
-//        {
-//            //落地瞬间、不在漂移并且速度大于一定值时开始漂移
-//            if (isGround && !isGroundLastFrame && !isDrifting && kartRigidbody.velocity.sqrMagnitude > 10)
-//            {
-//                StartDrift();   //开始漂移
-//            }
-//        }
+        public Suspensions(Transform sus, float lenght = 0)
+        {
+            this.suspensions = sus;
+            this.lastLenght = lenght;
+        }
 
-//        //放开空格：漂移结束
-//        if (Input.GetKeyUp(KeyCode.Space))
-//        {
-//            if (isDrifting)
-//            {
-//                Boost(boostForce);//加速
-//                StopDrift();//停止漂移
-//            }
-//        }
-//    }
+        public void SetLastSuspensionLength(float length)
+        {
+            this.lastLenght = length;
+        }
+    }
 
-//    private void FixedUpdate()
-//    {
-//        //车转向
-//        CheckGroundNormal();        //检测是否在地面上，并且使车与地面保持水平
-//        Turn();                     //输入控制左右转向
+    [Header("SuspensionCalculate")]
+    // 彈力係數
+    [SerializeField] float k = 5f;
+    // 阻力
+    [SerializeField] float damping = 0.5f;
 
-//        //起步时 力递增
-//        IncreaseForce();
-//        //漂移加速后/松开加油键 力递减
-//        ReduceForce();
+    [Header("CarPush")]
+    [SerializeField] float speed = 80f;
+    [SerializeField] float maxumnSpeed = 10f;
+    [SerializeField] float dragScale = 5f;
+
+    [Header("CarRotate")]
+    [SerializeField] float anglearSpeed = 2f;
+    [SerializeField] float maxumnAnglearSpeed = 3f;
+    // 角度修正率
+    [SerializeField] float angularFixedRate = 0.5f;
+
+    [Header("physics Effect")]
+    [SerializeField] float inertiaDumpScale = 100f;
+    float lastInputPush;
+
+    private void OnDrawGizmos()
+    {
+        // 在編輯畫面顯示懸吊系統
+        if (!Application.isPlaying)
+        {
+            Gizmos.color = Color.red;
+            for (int i = -1; i <= 1; i += 2)
+            {
+                for (int j = -1; j <= 1; j += 2)
+                {
+                    var point = new Vector3(i * suspensionPoint.x / 2, suspensionPoint.y, j * suspensionPoint.z / 2);
+                    point = transform.rotation * point;
+                    point = transform.position + point;
+
+                    Gizmos.DrawSphere(point, 0.05f);
+                    Gizmos.DrawLine(point, (-transform.up * suspensionStrech) + point);
+                }
+            }
+        }
+    }
+
+    private void Start()
+    {
+        GenerateSuspension();
+
+        // 設定最大角向量
+        rigidbody.maxAngularVelocity = maxumnAnglearSpeed;
+    }
+
+    private void Update()
+    {
+        inputPush = Input.GetAxis("Vertical");
+        inputTorque = Input.GetAxisRaw("Horizontal");
+    }
+
+    private void FixedUpdate()
+    {
+        RaycastHit[] compressionInfo = SuspenionBounce();
+
+        bool wheelContact = PushForce(compressionInfo);
+
+        RotateTorque(wheelContact);
+
+        PhysicalsFixed(wheelContact);
+        lastInputPush = inputPush;
+    }
 
 
-//        //如果在漂移
-//        if (isDrifting)
-//        {
-//            CalculateDriftingLevel();   //计算漂移等级
-//            ChangeDriftColor();         //根据漂移等级改变颜色
-//        }
+    private void GenerateSuspension()
+    {
+        int suspensionIndex = 0;
 
-//        //根据上述情况，进行最终的旋转和加力
-//        kartRigidbody.MoveRotation(rotationStream);
-//        //计算力的方向
-//        CalculateForceDir();
-//        //移动
-//        AddForceToMove();
-//    }
+        for (int i = -1; i <= 1; i += 2)
+        {
+            for (int j = -1; j <= 1; j += 2)
+            {
+                var point = new Vector3(i * suspensionPoint.x / 2, suspensionPoint.y, j * suspensionPoint.z / 2);
+                point = transform.rotation * point;
+                point = transform.position + point;
 
-//    //偵測是否在地上(完成)
-//    public void CheckGroundNormal()
-//    {
-//        Quaternion VStream = transform.GetComponent<Rigidbody>().rotation;
-//        Quaternion HStream = transform.GetComponent<Rigidbody>().rotation;
+                // 生成懸吊點
+                GameObject suspension = new GameObject();
+                suspension.name = "suspension: " + point;
+                suspension.transform.parent = transform;
+                suspension.transform.position = point;
+                suspension.transform.rotation = transform.rotation;
+                suspension.transform.localScale = Vector3.one;
 
-//        RaycastHit frontHit;
-//        RaycastHit rearHit;
-//        RaycastHit rightHit;
-//        RaycastHit leftHit;
+                // 懸吊點存入陣列
+                suspensions[suspensionIndex] = new Suspensions(suspension.transform);
 
-//        bool hasfront = Physics.Raycast(transform.position + new Vector3(0, 0, 2), -transform.up, out frontHit, 1.1f);
-//        bool hasrear = Physics.Raycast(transform.position + new Vector3(0, 0, -2), -transform.up, out rearHit, 1.1f);
-//        bool hasright = Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit, 1.1f);
-//        bool hasleft = Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit, 1.1f);
+                suspensionIndex++;
+            }
+        }
+    }
 
-//        //print(frontHit.transform.gameObject.layer);
-//        if (hasfront || hasrear || hasright || hasleft)
-//            isGround = true;
-//        //Debug.DrawLine(transform.position + new Vector3(0, 0, 2), frontHit.point);
-//        else
-//            isGround = false;
-//            //Debug.Log("no no no");
+    private RaycastHit[] SuspenionBounce()
+    {
+        RaycastHit[] SuspensionInfo = new RaycastHit[4];
 
-//        //垂直方向與地面水平
-//        Vector3 VNormal = (frontHit.normal + rearHit.normal).normalized;
-//        Quaternion VQuaternion = Quaternion.FromToRotation(transform.up, VNormal);
-//        Vector3 HNormal = (frontHit.normal + rearHit.normal).normalized;
-//        Quaternion HQuaternion = Quaternion.FromToRotation(transform.up, HNormal);
+        for (int i = 0; i < suspensions.Length; i++)
+        {
+            Transform suspensionPoint = suspensions[i].suspensions;
+            float lastSuspensionLenght = suspensions[i].lastLenght;
 
-//        //水平方向與地面水平
-//        VStream = VQuaternion * VStream;
-//        transform.GetComponent<Rigidbody>().MoveRotation(VStream);
-//        HStream = HQuaternion * HStream;
-//        transform.GetComponent<Rigidbody>().MoveRotation(HStream);
-//    }
+            // 偵測懸吊
+            Ray suspensionRay = new Ray(suspensionPoint.position, -suspensionPoint.up);
+            RaycastHit hit;
+            bool compression = Physics.Raycast(suspensionRay, out hit, suspensionStrech, groundLayer);
 
-//    //轉彎
-//    public void Turn()
-//    {
-//        //只能在移动时转弯
-//        if (kartRigidbody.velocity.sqrMagnitude <= 0.1)
-//        {
-//            return;
-//        }
+            // 懸吊距離
+            float suspensionLength = (hit.distance != 0) ? hit.distance : suspensionStrech;
 
-//        //漂移时自带转向
-//        if (driftDirection == DriftDirection.Left)
-//        {
-//            rotationStream = rotationStream * Quaternion.Euler(0, -40 * Time.fixedDeltaTime, 0);
-//        }
-//        else if (driftDirection == DriftDirection.Right)
-//        {
-//            rotationStream = rotationStream * Quaternion.Euler(0, 40 * Time.fixedDeltaTime, 0);
-//        }
+            if (compression)
+            {
+                float m = rigidbody.mass;
+                float a = 9.18f;
 
-//        //后退时左右颠倒
-//        float modifiedSteering = Vector3.Dot(kartRigidbody.velocity, transform.forward) >= 0 ? h_Input : -h_Input;
+                // 每個點的施平均施力中間值
+                float pointForce = (m * a) / suspensions.Length;
 
-//        //输入可控转向：如果在漂移，可控角速度为30，否则平常状态为60.
-//        turnSpeed = driftDirection != DriftDirection.None ? 30 : 60;
-//        float turnAngle = modifiedSteering * turnSpeed * Time.fixedDeltaTime;
-//        Quaternion deltaRotation = Quaternion.Euler(0, turnAngle, 0);
+                // 懸吊壓縮比率
+                float compressionRatio = (suspensionStrech - suspensionLength) / suspensionStrech;
 
-//        rotationStream = rotationStream * deltaRotation;//局部坐标下旋转,这里有空换一个简单的写法
-//    }
+                // 彈簧施力比
+                float suspensionForceRatio = (1f / 2f) * k * compressionRatio * compressionRatio;
 
-//    //计算加力方向
-//    public void CalculateForceDir()
-//    {
-//        //往前加力
-//        if (v_Input > 0)
-//        {
-//            verticalModified = 1;
-//        }
-//        else if (v_Input < 0)//往后加力
-//        {
-//            verticalModified = -1;
-//        }
+                // 懸吊施力
+                float suspensionForce = pointForce * 2 * suspensionForceRatio;
 
-//        forceDir_Horizontal = m_DriftOffset * transform.forward;
-//    }
+                // 彈簧阻力
+                float verticalVelocity = suspensionLength - lastSuspensionLenght;
+                float verticalAddForce = suspensionForce;
 
-//    //加力移动
-//    public void AddForceToMove()
-//    {
-//        //计算合力
-//        Vector3 tempForce = verticalModified * currentForce * forceDir_Horizontal;
+                bool addDamping = (verticalVelocity > 0 && verticalAddForce > 0) || (verticalVelocity < 0 && verticalAddForce < 0);
+                float suspensionDamping = addDamping ? suspensionForce * damping : 0;
 
-//        if (!isGround)  //如不在地上，则加重力
-//        {
-//            tempForce = tempForce + gravity * Vector3.down;
-//        }
+                float addForce = suspensionForce - suspensionDamping;
 
-//        kartRigidbody.AddForce(tempForce, ForceMode.Force);
-//    }
+                // 施力
+                Vector3 suspensionAddForce = suspensionPoint.up * addForce;
+                rigidbody.AddForceAtPosition(suspensionAddForce, suspensionPoint.position);
 
-//    void Jump()
-//    {
+                suspensions[i].SetLastSuspensionLength(suspensionLength);
+            }
 
-//    }
+            SuspensionInfo[i] = hit;
+        }
 
-//    void StartDrift()
-//    {
-//        isDrifting = true;
+        return SuspensionInfo;
+    }
 
-//        //根据水平输入决定漂移时车的朝向，因为合速度方向与车身方向不一致，所以为加力方向添加偏移
-//        if (h_Input < 0)
-//        {
-//            driftDirection = DriftDirection.Left;
-//            //左漂移时，合速度方向为车头朝向的右前方，偏移具体数值需结合实际自己调试
-//            m_DriftOffset = Quaternion.Euler(0f, 30, 0f);
-//        }
-//        else if (h_Input > 0)
-//        {
-//            driftDirection = DriftDirection.Right;
-//            m_DriftOffset = Quaternion.Euler(0f, -30, 0f);
-//        }
+    // 回傳有沒有輪子碰地
+    private bool PushForce(RaycastHit[] compressionInfo)
+    {
+        bool wheelContact = false;
 
-//        //播放漂移粒子特效
-//        PlayDriftParticle();
-//    }
+        for (int i = 0; i < compressionInfo.Length; i++)
+        {
+            RaycastHit hit = compressionInfo[i];
+            Vector3 normal = hit.normal;
 
-//    void StopDrift()
-//    {
-//        isDrifting = false;
-//        driftDirection = DriftDirection.None;
-//        driftPower = 0;
-//        m_DriftOffset = Quaternion.identity;
-//        StopDriftParticle();
-//    }
+            wheelContact = wheelContact ? true : (hit.collider != null);
 
-//    //加速
-//    public void Boost(float boostForce)
-//    {
-//        //按照漂移等级加速：1 / 1.1 / 1.2
-//        currentForce = (1 + (int)driftLevel / 10) * boostForce;
-//        EnableTrail();
-//    }
+            // 確認地板
+            if (hit.collider == null) { continue; }
 
-//    //力递减
-//    public void ReduceForce()
-//    {
-//        float targetForce = currentForce;
-//        if (isGround && v_Input == 0)
-//        {
-//            targetForce = 0;
-//        }
-//        else if (currentForce > normalForce)    //用于加速后回到普通状态
-//        {
-//            targetForce = normalForce;
-//        }
+            Vector3 pushForceDirction = Vector3.ProjectOnPlane(transform.forward, hit.normal);
 
-//        if (currentForce <= normalForce)
-//        {
-//            DisableTrail();
-//        }
+            // Push
+            Vector3 pushForce = pushForceDirction * inputPush * speed;
+            rigidbody.AddForce(pushForce);
 
-//        //每秒60递减，可调
-//        currentForce = Mathf.MoveTowards(currentForce, targetForce, 60 * Time.fixedDeltaTime);
-//    }
+            // 速度限制
+            if (rigidbody.velocity.magnitude > maxumnSpeed)
+                rigidbody.velocity = rigidbody.velocity.normalized * maxumnSpeed;
+        }
 
-//    public void CalculateDriftingLevel()
-//    {
-//        driftPower += Time.fixedDeltaTime;
-//        //0.7秒提升一个漂移等级
-//        if (driftPower < 0.7)
-//        {
-//            driftLevel = DriftLevel.One;
-//        }
-//        else if (driftPower < 1.4)
-//        {
-//            driftLevel = DriftLevel.Two;
-//        }
-//        else
-//        {
-//            driftLevel = DriftLevel.Three;
-//        }
-//    }
+        return wheelContact;
+    }
 
-//    public void ChangeDriftColor()
-//    {
-//        foreach (var tempParticle in wheelsParticeles)
-//        {
-//            var t = tempParticle.main;
-//            t.startColor = driftColors[(int)driftLevel];
-//        }
-//    }
-//}
+    private void RotateTorque(bool whellContact)
+    {
+        // 輪子有無碰地面
+        if (!whellContact) { return; }
+
+        float speedScale2AngleVelocity = rigidbody.velocity.magnitude / maxumnSpeed;
+        float rotateSpeed = anglearSpeed * inputTorque * inputPush * speedScale2AngleVelocity;
+        Vector3 angleSpeed = transform.up * rotateSpeed;
+        rigidbody.AddRelativeTorque(angleSpeed, ForceMode.Impulse);
+
+        Vector3 angularVelocity2Fixed = transform.InverseTransformDirection(rigidbody.angularVelocity);
+        float angluarDir2Fixed = (angularVelocity2Fixed.y > 0) ? 1 : -1;
+        float fixedScale = Mathf.Abs(angularVelocity2Fixed.y / maxumnAnglearSpeed);
+        Vector3 angleFixed = -(transform.up * angluarDir2Fixed * angularFixedRate * fixedScale);
+        rigidbody.AddRelativeTorque(angleFixed, ForceMode.Impulse);
+    }
+
+    private void PhysicalsFixed(bool wheelContact)
+    {
+        if (!wheelContact) { return; }
+
+        Vector3 localVelocity = transform.InverseTransformDirection(rigidbody.velocity);
+        localVelocity.y = 0;
+        Vector3 velocityDrag = transform.TransformVector(localVelocity);
+        rigidbody.AddForce(-velocityDrag * dragScale);
+
+        float inputGap = lastInputPush - inputPush;
+        float speedScale2PhysicsEffect = rigidbody.velocity.magnitude / maxumnSpeed;
+        Vector3 effectTorque = transform.right * inputGap * speedScale2PhysicsEffect * inertiaDumpScale;
+        rigidbody.AddTorque(effectTorque);
+    }
+}

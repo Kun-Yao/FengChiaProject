@@ -25,6 +25,8 @@ public class CarController : MonoBehaviour
     float boostForce;
     float RightRotationY;
     float LeftRotationY;
+    float radius;
+    float drag;
     bool isGround = false;
     bool isGroundLastFrame;
     bool isDrifting = false;
@@ -33,6 +35,7 @@ public class CarController : MonoBehaviour
     Vector3 checkPoint;
     Vector3 forceDir;
     Vector3 tempForce;
+    Vector3 localVelocity;
     Rigidbody rb;
 
     Quaternion m_DriftOffset;
@@ -41,8 +44,8 @@ public class CarController : MonoBehaviour
     private void Awake()
     {
         GM = FindObjectOfType<GameManager>();
-        
-        
+        Reset.onStateUp += Relife;
+
     }
 
     private void OnDestroy()
@@ -60,7 +63,6 @@ public class CarController : MonoBehaviour
         currentForce = maxForce;
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
-        rb.mass = 100;
     }
 
     IEnumerator wait()
@@ -72,7 +74,7 @@ public class CarController : MonoBehaviour
     void startRace()
     {
         GM.canMove = true;
-        Reset.onStateUp += Relife;
+        
     }
 
     // Update is called once per frame
@@ -128,11 +130,6 @@ public class CarController : MonoBehaviour
             GM = FindObjectOfType<GameManager>();
         }
 
-        if(GM.canMove == false)
-        {
-            return;
-        }
-
         CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
         if (isGround == false)
         {
@@ -162,7 +159,7 @@ public class CarController : MonoBehaviour
     {
         
         //只能在移動時轉彎
-        if (rb.velocity.sqrMagnitude <= 0.10)
+        if (right.GetComponent<Control>().accelator() < 0.1 && left.GetComponent<Control>().goback() < 0.1)
         {
             return;
         }
@@ -172,10 +169,10 @@ public class CarController : MonoBehaviour
         LeftRotationY = checkAngle(left.transform.localEulerAngles.y);
         turn = (RightRotationY + LeftRotationY) / 2 / 100;
 
-        if(Mathf.Abs(turn) > 0.45)
-        {
-            turn = 0.45f * turn / Mathf.Abs(turn);
-        }
+        //if(Mathf.Abs(turn) > 0.45)
+        //{
+        //    turn = 0.45f * turn / Mathf.Abs(turn);
+        //}
 
         if (turn > 0.05)
         {
@@ -187,11 +184,11 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            H_Direction = new Vector3(0, 0, 0);
+            H_Direction = transform.forward;
         }
         
         transform.Rotate(0, turn * direction, 0);
-
+        print("turn:" + turn*direction);
         ////飄移角度
         //if (driftDirection == -1)
         //{
@@ -206,14 +203,27 @@ public class CarController : MonoBehaviour
         //    rotationStream = rotationStream * deltaRotation;
         //}
 
-        //if(right.GetComponent<Control>().accelator() > 0 || left.GetComponent<Control>().goback() > 0)
-        //{
-        //    Vector3 localVelocity = transform.InverseTransformDirection(rb.velocity);
-        //    localVelocity.z = 0;
-        //    Vector3 velocityDrag = transform.TransformVector(localVelocity);
-        //    rb.AddForce(-velocityDrag * 100);
-        //}
-        
+        if (right.GetComponent<Control>().accelator() > 0 || left.GetComponent<Control>().goback() > 0)
+        {
+            
+            localVelocity = transform.InverseTransformDirection(rb.velocity);
+            print(localVelocity.x);
+            if(Mathf.Abs(localVelocity.x) > 15f && !isDrifting)
+            {
+                //localVelocity.x = 0;
+                //transform.TransformVector(localVelocity);
+                //rb.AddForce(H_Direction * 1000);
+                radius = Mathf.Sin((180 - 2 * Mathf.Abs(turn)) / 2) * localVelocity.z * 0.5f / Mathf.Sin(2 * Mathf.Abs(turn));
+                drag = rb.mass * localVelocity.z * localVelocity.z / radius;
+                //print("Dir = " + rb.velocity + " lDir = " + localVelocity + " lDrag = " + drag * H_Direction + " " + transform.InverseTransformDirection(H_Direction));
+            }
+            else
+            {
+                drag = 0;
+            }
+            rb.AddForce(drag * H_Direction);
+        }
+
     }
 
     //計算施力方向
@@ -231,19 +241,19 @@ public class CarController : MonoBehaviour
         else
         {
             direction = 0;
-            rb.velocity *= 0.9f;
+            rb.velocity *= 0.95f;
         }
 
         if (isDrifting)
-            forceDir = transform.forward * direction * Mathf.Cos(turn);
+            forceDir = transform.forward * direction * Mathf.Cos(turn) + H_Direction;
         else
             forceDir = transform.forward * direction * Mathf.Cos(turn);
     }
 
     private void GiveForce()
     {
-        
-        if(rb.velocity.z > maxspeed)
+        localVelocity = transform.InverseTransformDirection(rb.velocity);
+        if(localVelocity.z > maxspeed)
         {
             currentForce = 0;
         }
@@ -267,11 +277,11 @@ public class CarController : MonoBehaviour
         rb.AddForce(tempForce, ForceMode.Force);
 
         
-        if(Mathf.Abs(rb.velocity.x) > Mathf.Abs(rb.velocity.z) && !isDrifting)
-        {
-            print("轉彎囉");
-            rb.AddForce(rb.mass * rb.velocity.z * Mathf.Sin(2*turn) / (0.02f * Mathf.Sin(90-turn)) * H_Direction);
-        }
+        //if(Mathf.Abs(rb.velocity.x) > Mathf.Abs(rb.velocity.z) && !isDrifting)
+        //{
+        //    print("轉彎囉");
+        //    rb.AddForce(rb.mass * rb.velocity.z * Mathf.Sin(2*turn) / (0.02f * Mathf.Sin(90-turn)) * H_Direction);
+        //}
         
     }
     
@@ -385,6 +395,7 @@ public class CarController : MonoBehaviour
 
     private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
+        if (!GM.canMove) return;
         Debug.Log("break");
         Debug.Log(gameObject.name);
         string[] N = gameObject.name.Split('(');
