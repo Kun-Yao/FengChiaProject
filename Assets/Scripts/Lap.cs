@@ -26,14 +26,12 @@ public class Lap : MonoBehaviour
     void Awake()
     {
         int i = 0;
-        for (i = 0; i < 3; i++)
+        for (i = 0; i < 1; i++)
         {
-            points.Push(23);
-            points.Push(20);
-            points.Push(17);
-            points.Push(15);
-            points.Push(6);
+            points.Push(4);
             points.Push(3);
+            points.Push(2);
+            points.Push(1);
             points.Push(0);
         }
 
@@ -47,53 +45,9 @@ public class Lap : MonoBehaviour
         {
             array[i++] = child.gameObject;
         }
-
-        lastDis = Vector3.Distance(array[0].transform.position, array[1].transform.position);
-        lastDis = (float)(Mathf.Round(lastDis * 100000)) / 100000;
-
-        InvokeRepeating("time", 1, 1);
     }
 
-    private void Update()
-    {
-        if (wrongWay)
-            print("wrong");
-    }
+   
 
-    private void time()
-    {
-        
-        print(point);
-        if (car == null)
-            car = GameObject.FindWithTag("Player");
-        newDis = Vector3.Distance(car.transform.position, array[point].transform.position);
-        newDis = (float)(Mathf.Round(newDis * 100000)) / 100000;
-
-
-        //夾角需要待測
-        if (newDis > lastDis && Vector3.Angle(car.transform.forward, array[point].transform.position) > 20)
-            wrongWay = true;
-        else
-            wrongWay = false;
-        lastDis = newDis;
-    }
-
-    //IEnumerator timer3()
-    //{
-    //    yield return new WaitForSeconds(1);
-    //    sec++;
-    //    startTime = true;
-    //}
-
-    //void Update()
-    //{
-    //    if (startTime)
-    //    {
-    //        StartCoroutine("timer3");
-    //        startTime = false;
-    //        min += sec / 60;
-    //        sec = sec % 60;
-    //        time.text = "Time: " + min + " : " + sec;
-    //    }
-    //}
+  
 }

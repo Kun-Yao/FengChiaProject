@@ -130,7 +130,10 @@ public class CarController : MonoBehaviour
             GM = FindObjectOfType<GameManager>();
         }
 
+        if (GM.canMove == false) return;
+
         CheckGroundNormal();        //檢測是否在地面上，並且使車與地面保持水平
+
         if (isGround == false)
         {
             return;
@@ -188,7 +191,6 @@ public class CarController : MonoBehaviour
         }
         
         transform.Rotate(0, turn * direction, 0);
-        print("turn:" + turn*direction);
         ////飄移角度
         //if (driftDirection == -1)
         //{
@@ -207,7 +209,6 @@ public class CarController : MonoBehaviour
         {
             
             localVelocity = transform.InverseTransformDirection(rb.velocity);
-            print(localVelocity.x);
             if(Mathf.Abs(localVelocity.x) > 15f && !isDrifting)
             {
                 //localVelocity.x = 0;

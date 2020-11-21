@@ -53,11 +53,12 @@ public class GameManager : MonoBehaviour
 
     public void ResetCar(string CarName)
     {
+        print("relife in GM: "+relifePoint);
         string name = CarName;
         GameObject.Destroy(GameObject.Find(CarName));
         Transform relife = GameObject.Find("CheckPoints").transform.GetChild(relifePoint);
         GameObject newG = GameObject.Instantiate((GameObject)Resources.Load("Prefabs/" + name), relife.position, Quaternion.Euler(0, 0, 0));
-        newG.transform.rotation = Quaternion.FromToRotation(newG.transform.forward, relife.right);
+        newG.transform.localRotation = Quaternion.FromToRotation(newG.transform.forward, relife.right);
         newG.name = name;
         newG.GetComponent<CarController>().enabled = true;
         newG.GetComponent<Rigidbody>().useGravity = true;

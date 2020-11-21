@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PathFollowing : MonoBehaviour
 {
-
+    private GameManager GM;
     public Path path;//The path
 
     public float speed = 20.0f;//following speed
@@ -20,7 +20,7 @@ public class PathFollowing : MonoBehaviour
 
     void Start()
     {
-
+        GM = FindObjectOfType<GameManager>();
         pathLength = path.Length;
 
         curPathIndex = 0;
@@ -28,11 +28,27 @@ public class PathFollowing : MonoBehaviour
         //get the current velocity of the vehicle
         curVelocity = transform.forward;
 
+        if (GM.canMove == false)
+        {
+            StartCoroutine(wait());
+        }
+    }
+
+    IEnumerator wait()
+    {
+        yield return new WaitForSeconds(5);
+        startRace();
+    }
+
+    void startRace()
+    {
+        GM.canMove = true;
+
     }
 
     void Update()
     {
-
+        if (GM.canMove == false) return;
         //Unify the speed
         curSpeed = speed * Time.deltaTime;
 

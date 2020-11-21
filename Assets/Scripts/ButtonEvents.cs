@@ -68,6 +68,10 @@ public class ButtonEvents : MonoBehaviour
                         control.SetActive(false);
                     }
                 }
+                else if (currentObject.CompareTag("end"))
+                {
+                    Application.Quit();
+                }
             }
         }
     }
