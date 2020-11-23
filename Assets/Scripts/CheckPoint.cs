@@ -28,6 +28,7 @@ public class CheckPoint : MonoBehaviour
             {
                 print("Finish");
                 other.GetComponent<CarController>().enabled = false;
+                other.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 finished.SetActive(true);
                 Invoke("finish", 5);
             }

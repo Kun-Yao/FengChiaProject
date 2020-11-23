@@ -39,10 +39,21 @@ public class GameStart : MonoBehaviour
                 //關閉場地攝影機
                 this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
 
-                //開啟賽車攝影機                
-                player.transform.GetChild(0).gameObject.SetActive(true);
-                player.transform.GetChild(0).gameObject.AddComponent<CameraFollow>();
-                player.transform.GetChild(0).SetParent(null);
+                //開啟賽車攝影機  
+                Transform CAM = player.transform.GetChild(0);
+                CAM.gameObject.SetActive(true);
+                CAM.gameObject.AddComponent<CameraFollow>();
+                GameObject V = GameObject.Find("Velocity");
+                GameObject U = GameObject.Find("Unit");
+                GameObject C = GameObject.Find("Cycle");
+                V = Instantiate(V,CAM);
+                V.name = "V";
+                U = Instantiate(U, CAM);
+                U.name = "U";
+                C = Instantiate(C, CAM);
+                C.name = "C";
+                CAM.SetParent(null);
+
                 player.GetComponent<Rigidbody>().useGravity = true;
                 player.GetComponent<CarController>().enabled = true;
                 gameManager.setEmpty(i, false);

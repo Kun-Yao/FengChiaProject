@@ -26,7 +26,7 @@ public class Lap : MonoBehaviour
     void Awake()
     {
         int i = 0;
-        for (i = 0; i < 1; i++)
+        for (i = 0; i < 2; i++)
         {
             points.Push(4);
             points.Push(3);

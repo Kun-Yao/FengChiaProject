@@ -4,82 +4,57 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    GameManager gameManager;
-    BoxCollider Box;
-    GameObject kart;
-    GameObject left;
-    GameObject right;
-    Vector3 CurrCarPos;
-    Vector3 LastCarPos;
-    Vector3 PosOfCam;
-    Quaternion LastCarRot;
-    Quaternion CurrCarRot;
+    public Transform target;
+    public float distance = 15.0f;
+    public float height = 5.0f;
+    public float heightDamping = 2.0f;
+    public float lookAtHeight = 0.0f;
+    public Rigidbody parentRigidbody;
+    public float rotationSnapTime = 0.3F;
+    public float distanceSnapTime;
+    public float distanceMultiplier;
+    private Vector3 lookAtVector;
+    private float usedDistance;
+    float wantedRotationAngle;
+    float wantedHeight;
+    float currentRotationAngle;
+    float currentHeight;
+    Quaternion currentRotation;
+    Vector3 wantedPosition;
+    private float yVelocity = 0.0F;
+    private float zVelocity = 0.0F;
+    GameManager GM;
 
-
-    float distance;
-    float height;
-    float time;
-
-    // Start is called before the first frame update
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
-        kart = GameObject.Find(gameManager.CarName);
-        Box = kart.GetComponent<BoxCollider>();
-        distance = 5;
-        height = Box.size.y / Box.size.z;
-        transform.position = kart.transform.position + new Vector3(0, height, -distance);
-        //transform.rotation = Quaternion.FromToRotation(transform.forward, transform.right);
-        print("forward " + kart.transform.forward + Vector3.forward);
+        lookAtVector = new Vector3(0, lookAtHeight, 0);
+        GM = FindObjectOfType<GameManager>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void Update()
     {
-        if(kart == null)
-        {
-            kart = GameObject.Find(gameManager.CarName);
-            Box = kart.GetComponent<BoxCollider>();
-        }
+        if (target == null)
+            target = GameObject.Find(GM.CarName).transform;
 
-        if (left == null)
+        if(parentRigidbody == null)
         {
-            left = GameObject.Find("Controller (left)");
+            parentRigidbody = GameObject.Find(GM.CarName).GetComponent<Rigidbody>();
         }
-
-        if (right == null)
-        {
-            right = GameObject.Find("Controller (right)");
-        }
-
-        time += Time.deltaTime;
-        if (LastCarPos != kart.transform.position)
-        {
-            LastCarPos = CurrCarPos;
-        }
-
-        //每二個frame儲存一次賽車的角度
-        if(time >= 0.02)
-        {
-            LastCarRot = CurrCarRot;
-            time = 0;
-        }
-        
-        CurrCarRot = kart.transform.rotation;
-        CurrCarPos = kart.transform.localPosition;
-        //transform.position = kart.transform.position + new Vector3(0, height, -distance);
-        if(left.transform.localRotation.eulerAngles.y + right.transform.localRotation.eulerAngles.y < 5)
-        {
-            transform.position = kart.transform.position + (transform.up * Box.size.y) - (transform.forward * Box.size.z);
-            transform.rotation = kart.transform.rotation;
-        }
-        else
-        {
-            transform.position = LastCarPos + (transform.up * Box.size.y) - (transform.forward * Box.size.z);
-            transform.rotation = LastCarRot;
-        }
-        
-        
+    }
+    void LateUpdate()
+    {
+        wantedHeight = target.position.y + height;
+        currentHeight = transform.position.y;
+        wantedRotationAngle = target.eulerAngles.y;
+        currentRotationAngle = transform.eulerAngles.y;
+        currentRotationAngle = Mathf.SmoothDampAngle(currentRotationAngle, wantedRotationAngle, ref yVelocity, rotationSnapTime);
+        currentHeight = Mathf.Lerp(currentHeight, wantedHeight, heightDamping * Time.deltaTime);
+        wantedPosition = target.position;
+        wantedPosition.y = currentHeight;
+        usedDistance = Mathf.SmoothDampAngle(usedDistance, distance + (parentRigidbody.velocity.magnitude * distanceMultiplier), ref zVelocity, distanceSnapTime);
+        wantedPosition += Quaternion.Euler(0, currentRotationAngle, 0) * new Vector3(0, 0, -usedDistance);
+        transform.position = wantedPosition;
+        transform.LookAt(target.position + lookAtVector);
     }
 
 }

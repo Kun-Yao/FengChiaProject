@@ -12,6 +12,7 @@ public class CarController : MonoBehaviour
 
     GameObject left;
     GameObject right;
+    GameObject V, C, G, U;
     GameManager GM;
 
     int direction = 0;
@@ -63,6 +64,14 @@ public class CarController : MonoBehaviour
         currentForce = maxForce;
         checkPoint = transform.position;
         rb = transform.GetComponent<Rigidbody>();
+
+        V = GameObject.Find("V");
+        C = GameObject.Find("C");
+        U = GameObject.Find("U");
+        V.GetComponent<MeshRenderer>().enabled = true;
+        C.GetComponent<MeshRenderer>().enabled = true;
+        U.GetComponent<MeshRenderer>().enabled = true;
+        G = GameObject.Find("Game");
     }
 
     IEnumerator wait()
@@ -156,6 +165,7 @@ public class CarController : MonoBehaviour
         CalculateForceDir();
         //移动
         GiveForce();
+        Show();
     }
 
     private void TurnAround()
@@ -415,5 +425,11 @@ public class CarController : MonoBehaviour
         {
             return finalAngle + 180;
         }
+    }
+
+    private void Show()
+    {
+        V.GetComponent<TextMesh>().text = (Mathf.Abs((int)localVelocity.z)).ToString();
+        C.GetComponent<TextMesh>().text = G.GetComponent<Lap>().lap.ToString() + " / 2 Lap";
     }
 }
