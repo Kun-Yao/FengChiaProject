@@ -86,6 +86,7 @@
     <Compile Include="Assets\Scripts\RadialSection.cs" />
     <Compile Include="Assets\Scripts\RotanCamera.cs" />
     <Compile Include="Assets\Scripts\SetTexture.cs" />
+    <Compile Include="Assets\Scripts\SoundManager.cs" />
     <Compile Include="Assets\Scripts\VRUIInput.cs" />
     <Compile Include="Assets\Scripts\VRUIItem.cs" />
     <Compile Include="Assets\Scripts\carevent.cs" />

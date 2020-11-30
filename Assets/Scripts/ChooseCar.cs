@@ -23,6 +23,7 @@ public class ChooseCar : MonoBehaviour
     float top;
     float buttom;
     GameObject lastObject;
+    GameObject rArrow, lArrow;
 
     private void Awake()
     {
@@ -35,7 +36,7 @@ public class ChooseCar : MonoBehaviour
     private void OnDestroy()
     {
         touchPos.onAxis -= Position;
-        press.onState -= PressRelease;
+        //press.onState -= PressRelease;
     }
 
     void Start()
@@ -43,6 +44,8 @@ public class ChooseCar : MonoBehaviour
         ta = Resources.Load<TextAsset>("CarList/list");
         vs = ta.text.Split('\n');
         PosOfCar = transform.position;
+        lArrow = GameObject.Find("LArrow");
+        rArrow = GameObject.Find("RArrow");
 
         //刪除字串後面的enter，MAC要把這個迴圈註解
         for (int i = 0; i < vs.Length - 1; i++)
@@ -61,12 +64,25 @@ public class ChooseCar : MonoBehaviour
             PosOfCar += new Vector3(20, 0, 0);
         }
         now = 0;
+        print("now" + now);
+        currentObject = transform.GetChild(now).gameObject;
+        if (lastObject != null)
+        {
+            lastObject.GetComponent<Outline>().enabled = false;
+            lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        currentObject.GetComponent<Outline>().enabled = true;
+        string[] split = currentObject.name.Split('(');
+        gameManager.CarName = split[0];
+        print(gameManager.getName());
+        lastObject = currentObject;
+        lArrow.SetActive(false);
     }
     
 
     private void Update()
     {
-        SelectCar();
+        //SelectCar();
     }
 
     //按下觸控板左右移動list
@@ -84,37 +100,73 @@ public class ChooseCar : MonoBehaviour
 
     private void PressRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
     {
-        if (AxisX > 0 && transform.GetChild(0).transform.position.x < cameraRig.transform.position.x-5)
+        //可往右?
+        if (AxisX > 0 && now > 0)
         {
             transform.position += new Vector3(20, 0, 0);
+            now--;
         }
-        else if (AxisX < 0 && transform.GetChild(vs.Length-2).transform.position.x > cameraRig.transform.position.x+5)
+
+        //可往左?
+        else if (AxisX < 0 && now < vs.Length-2)
         {
+            lArrow.SetActive(true);
+            rArrow.SetActive(true);
             transform.position -= new Vector3(20, 0, 0);
+            now++;
         }
-    }
-
-    private void SelectCar()
-    {
-        if (right.GetComponent<Control>().GetRGrab())
+        
+        if(now == 0)
         {
-            currentObject = right.GetComponent<Control>().hit.collider.gameObject;
-            if (right.GetComponent<Control>().bHit && !currentObject.CompareTag("scene"))
-            {
-                if(lastObject != null)
-                {
-                    lastObject.GetComponent<Outline>().enabled = false;
-                    lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-                }
-                currentObject.GetComponent<Outline>().enabled = true;
-                string[] split = currentObject.name.Split('(');
-                gameManager.CarName = split[0];
-                print(gameManager.getName());
-                lastObject = currentObject;
-
-            }
+            lArrow.SetActive(false);
+            rArrow.SetActive(true);
         }
+        else if(now == vs.Length - 2)
+        {
+            lArrow.SetActive(true);
+            rArrow.SetActive(false);
+        }
+        else
+        {
+            lArrow.SetActive(true);
+            rArrow.SetActive(true);
+        }
+
+        print("now" + now);
+        currentObject = transform.GetChild(now).gameObject;
+        if (lastObject != null)
+        {
+            lastObject.GetComponent<Outline>().enabled = false;
+            lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        currentObject.GetComponent<Outline>().enabled = true;
+        string[] split = currentObject.name.Split('(');
+        gameManager.CarName = split[0];
+        print(gameManager.getName());
+        lastObject = currentObject;
     }
+
+    //private void SelectCar()
+    //{
+    //    if (right.GetComponent<Control>().GetRGrab())
+    //    {
+    //        currentObject = right.GetComponent<Control>().hit.collider.gameObject;
+    //        if (right.GetComponent<Control>().bHit && !currentObject.CompareTag("scene"))
+    //        {
+    //            if(lastObject != null)
+    //            {
+    //                lastObject.GetComponent<Outline>().enabled = false;
+    //                lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+    //            }
+    //            currentObject.GetComponent<Outline>().enabled = true;
+    //            string[] split = currentObject.name.Split('(');
+    //            gameManager.CarName = split[0];
+    //            print(gameManager.getName());
+    //            lastObject = currentObject;
+
+    //        }
+    //    }
+    //}
 
 
 }

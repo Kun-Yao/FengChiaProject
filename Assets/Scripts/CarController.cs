@@ -279,6 +279,7 @@ public class CarController : MonoBehaviour
         
         //計算合力: 實際施力 = 最大力道 * 水平方向施力 * 雙手控制器按壓的幅度差
         tempForce = currentForce * forceDir * Mathf.Abs(right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback());
+        SoundManager.playSound(Mathf.Abs(right.GetComponent<Control>().accelator() - left.GetComponent<Control>().goback()));
 
         if (!isGround)  //如不在地上，加重力
         {
@@ -381,13 +382,13 @@ public class CarController : MonoBehaviour
         RaycastHit leftHit;
 
         //laser是否接觸地面
-        Physics.Raycast(transform.position + new Vector3(0, 0, 1f), -transform.up, out frontHit);
-        Physics.Raycast(transform.position + new Vector3(0, 0, -1f), -transform.up, out rearHit);
-        Physics.Raycast(transform.position + new Vector3(1, 0, 0), -transform.up, out rightHit);
-        Physics.Raycast(transform.position + new Vector3(-1, 0, 0), -transform.up, out leftHit);
+        Physics.Raycast(transform.position + transform.forward, -transform.up, out frontHit);
+        Physics.Raycast(transform.position + -transform.forward, -transform.up, out rearHit);
+        Physics.Raycast(transform.position + transform.right, Vector3.down, out rightHit);
+        Physics.Raycast(transform.position + -transform.right, Vector3.down, out leftHit);
 
 
-        if (frontHit.distance < 1.1f || rearHit.distance < 1.1f || rightHit.distance < 1.1f || leftHit.distance < 1.1f)
+        if (frontHit.distance < 1.1f || rearHit.distance < .1f || rightHit.distance < 1.1f || leftHit.distance < 1.1f)
         {
             isGround = true;
         }
@@ -397,11 +398,23 @@ public class CarController : MonoBehaviour
             isGround = false;
             direction = 0;
         }
-
-        float deltaV = frontHit.distance - rearHit.distance;
-        float deltaH = rightHit.distance - leftHit.distance;
-        transform.Rotate(Mathf.Rad2Deg * Mathf.Atan(deltaV/2), 0, Mathf.Rad2Deg * Mathf.Atan(deltaH/2) * 180 / Mathf.PI);
-
+        Debug.DrawLine(transform.position + new Vector3(1, 0, 0), rightHit.point);
+        Debug.DrawLine(transform.position + new Vector3(-1, 0, 0), leftHit.point);
+        Debug.Log(rightHit.distance + " " + leftHit.distance);
+        //float deltaV = frontHit.distance - rearHit.distance;
+        //float deltaH = rightHit.distance - leftHit.distance;
+        //if(Mathf.Abs(deltaV) > 0.8f)
+        //{
+        //    transform.Rotate(Mathf.Atan(deltaV / 2), 0, 0);
+        //}
+        //if(Mathf.Abs(deltaH) > 0.8f)
+        //{
+        //    transform.Rotate(0, 0, Mathf.Atan(deltaH / 2));
+        //}
+        //Vector3 tempNormal = (frontHit.normal + rearHit.normal).normalized;
+        //Quaternion q = Quaternion.FromToRotation(transform.up, tempNormal);
+        //rb.MoveRotation(q);
+        
     }
 
     private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
