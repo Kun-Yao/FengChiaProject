@@ -100,24 +100,24 @@ public class CarController : MonoBehaviour
         }
 
         //按下飄移鍵，並且有轉向：開始漂移
-        if (left.GetComponent<Control>().Drift() && turn != 0)
-        {
-            //落地瞬間、不在飄移並且速度大於一定值時開始飄移
-            if (isGround && !isGroundLastFrame && !isDrifting && rb.velocity.sqrMagnitude > 10)
-            {
-                StartDrift();   //開始飄移
-            }
-        }
+        //if (left.GetComponent<Control>().Drift() && turn != 0)
+        //{
+        //    //落地瞬間、不在飄移並且速度大於一定值時開始飄移
+        //    if (isGround && !isGroundLastFrame && !isDrifting && rb.velocity.sqrMagnitude > 10)
+        //    {
+        //        StartDrift();   //開始飄移
+        //    }
+        //}
 
-        //放開飄移鍵：飄移結束
-        if (left.GetComponent<Control>().unDrift())
-        {
-            if (isDrifting)
-            {
-               //Boost(boostForce);//加速
-                StopDrift();//停止飄移
-            }
-        }
+        ////放開飄移鍵：飄移結束
+        //if (left.GetComponent<Control>().unDrift())
+        //{
+        //    if (isDrifting)
+        //    {
+        //       //Boost(boostForce);//加速
+        //        StopDrift();//停止飄移
+        //    }
+        //}
     }
 
     private void FixedUpdate()
@@ -150,9 +150,6 @@ public class CarController : MonoBehaviour
 
         TurnAround();                     //控制左右轉向
 
-        //漂移加速后/松开加油键 力递减
-        //ReduceForce();
-
         //如果在漂移
         if (isDrifting)
         {
@@ -182,11 +179,6 @@ public class CarController : MonoBehaviour
         LeftRotationY = checkAngle(left.transform.localEulerAngles.y);
         turn = (RightRotationY + LeftRotationY) / 2 / 100;
 
-        //if(Mathf.Abs(turn) > 0.45)
-        //{
-        //    turn = 0.45f * turn / Mathf.Abs(turn);
-        //}
-
         if (turn > 0.05)
         {
             H_Direction = transform.right;
@@ -201,19 +193,6 @@ public class CarController : MonoBehaviour
         }
         
         transform.Rotate(0, turn * direction, 0);
-        ////飄移角度
-        //if (driftDirection == -1)
-        //{
-        //    rotationStream = rotationStream * Quaternion.Euler(0, -40 * Time.fixedDeltaTime, 0);
-        //    Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
-        //    rotationStream = rotationStream * deltaRotation;
-        //}
-        //else if (driftDirection == 1)
-        //{
-        //    rotationStream = rotationStream * Quaternion.Euler(0, 40 * Time.fixedDeltaTime, 0);
-        //    Quaternion deltaRotation = Quaternion.Euler(0, turn * direction, 0);
-        //    rotationStream = rotationStream * deltaRotation;
-        //}
 
         if (right.GetComponent<Control>().accelator() > 0 || left.GetComponent<Control>().goback() > 0)
         {
@@ -221,12 +200,8 @@ public class CarController : MonoBehaviour
             localVelocity = transform.InverseTransformDirection(rb.velocity);
             if(Mathf.Abs(localVelocity.x) > 15f && !isDrifting)
             {
-                //localVelocity.x = 0;
-                //transform.TransformVector(localVelocity);
-                //rb.AddForce(H_Direction * 1000);
                 radius = Mathf.Sin((180 - 2 * Mathf.Abs(turn)) / 2) * localVelocity.z * 0.5f / Mathf.Sin(2 * Mathf.Abs(turn));
                 drag = rb.mass * localVelocity.z * localVelocity.z / radius;
-                //print("Dir = " + rb.velocity + " lDir = " + localVelocity + " lDrag = " + drag * H_Direction + " " + transform.InverseTransformDirection(H_Direction));
             }
             else
             {
@@ -255,10 +230,7 @@ public class CarController : MonoBehaviour
             rb.velocity *= 0.95f;
         }
 
-        if (isDrifting)
-            forceDir = transform.forward * direction * Mathf.Cos(turn) + H_Direction;
-        else
-            forceDir = transform.forward * direction * Mathf.Cos(turn);
+        forceDir = transform.forward * direction * Mathf.Cos(turn);
     }
 
     private void GiveForce()
@@ -267,10 +239,6 @@ public class CarController : MonoBehaviour
         if(localVelocity.z > maxspeed)
         {
             currentForce = 0;
-        }
-        else if (isDrifting)
-        {
-            currentForce = currentForce / 2;
         }
         else
         {
@@ -287,13 +255,6 @@ public class CarController : MonoBehaviour
         }
 
         rb.AddForce(tempForce, ForceMode.Force);
-
-        
-        //if(Mathf.Abs(rb.velocity.x) > Mathf.Abs(rb.velocity.z) && !isDrifting)
-        //{
-        //    print("轉彎囉");
-        //    rb.AddForce(rb.mass * rb.velocity.z * Mathf.Sin(2*turn) / (0.02f * Mathf.Sin(90-turn)) * H_Direction);
-        //}
         
     }
     
@@ -305,24 +266,7 @@ public class CarController : MonoBehaviour
         rb.AddForce(currentForce * transform.forward, ForceMode.VelocityChange);
     }
 
-    //力递减
-    //public void ReduceForce()
-    //{
-
-    //    float targetForce = currentForce;
-    //    if (isGround && (right.GetComponent<Control>().accelator() <= 0.1 || left.GetComponent<Control>().goback() <= 0.1))
-    //    {
-    //        direction = 0;
-    //        rb.velocity *= 0.98f;
-    //    }
-    //    else if (currentForce > maxForce)    //用于加速后回到普通状态
-    //    {
-    //        targetForce = maxForce;
-    //    }
-
-    //    //每秒60递减，可调
-    //    currentForce = Mathf.MoveTowards(currentForce, targetForce, 60 * Time.fixedDeltaTime);
-    //}
+   
 
     void Jump()
     {
@@ -398,23 +342,23 @@ public class CarController : MonoBehaviour
             isGround = false;
             direction = 0;
         }
-        Debug.DrawLine(transform.position + new Vector3(1, 0, 0), rightHit.point);
-        Debug.DrawLine(transform.position + new Vector3(-1, 0, 0), leftHit.point);
-        Debug.Log(rightHit.distance + " " + leftHit.distance);
-        //float deltaV = frontHit.distance - rearHit.distance;
-        //float deltaH = rightHit.distance - leftHit.distance;
-        //if(Mathf.Abs(deltaV) > 0.8f)
-        //{
-        //    transform.Rotate(Mathf.Atan(deltaV / 2), 0, 0);
-        //}
-        //if(Mathf.Abs(deltaH) > 0.8f)
-        //{
-        //    transform.Rotate(0, 0, Mathf.Atan(deltaH / 2));
-        //}
+
+        float deltav = frontHit.distance - rearHit.distance;
+        float deltah = rightHit.distance - leftHit.distance;
+        if (Mathf.Abs(deltav) > 0.8f)
+        {
+            transform.Rotate(Mathf.Atan(deltav / 2), 0, 0);
+        }
+        if (Mathf.Abs(deltah) > 0.8f)
+        {
+            transform.Rotate(0, 0, Mathf.Atan(deltah / 2));
+        }
+
+
         //Vector3 tempNormal = (frontHit.normal + rearHit.normal).normalized;
         //Quaternion q = Quaternion.FromToRotation(transform.up, tempNormal);
         //rb.MoveRotation(q);
-        
+
     }
 
     private void Relife(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)

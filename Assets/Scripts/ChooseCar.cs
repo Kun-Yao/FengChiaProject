@@ -23,29 +23,24 @@ public class ChooseCar : MonoBehaviour
     float top;
     float buttom;
     GameObject lastObject;
-    GameObject rArrow, lArrow;
+    public GameObject rArrow;
+    public GameObject lArrow;
 
-    private void Awake()
+    void Awake()
     {
-        touchPos.onAxis += Position;
-        press.onStateUp += PressRelease;
         gameManager = FindObjectOfType<GameManager>();
         transform.position = cameraRig.transform.position + new Vector3(0, 0, 7.63f);
+
     }
 
-    private void OnDestroy()
-    {
-        touchPos.onAxis -= Position;
-        //press.onState -= PressRelease;
-    }
+   
 
     void Start()
     {
         ta = Resources.Load<TextAsset>("CarList/list");
         vs = ta.text.Split('\n');
-        PosOfCar = transform.position;
-        lArrow = GameObject.Find("LArrow");
-        rArrow = GameObject.Find("RArrow");
+        PosOfCar = transform.position - new Vector3(20, 0, 0);
+        
 
         //刪除字串後面的enter，MAC要把這個迴圈註解
         for (int i = 0; i < vs.Length - 1; i++)
@@ -63,7 +58,7 @@ public class ChooseCar : MonoBehaviour
             print(PosOfCar);
             PosOfCar += new Vector3(20, 0, 0);
         }
-        now = 0;
+        now = 1;
         print("now" + now);
         currentObject = transform.GetChild(now).gameObject;
         if (lastObject != null)
@@ -76,97 +71,66 @@ public class ChooseCar : MonoBehaviour
         gameManager.CarName = split[0];
         print(gameManager.getName());
         lastObject = currentObject;
-        lArrow.SetActive(false);
+
     }
     
 
     private void Update()
     {
         //SelectCar();
+        if(!lArrow) lArrow = GameObject.Find("LArrow");
+        if(!rArrow) rArrow= GameObject.Find("RArrow");
+        fuck();
     }
 
-    //按下觸控板左右移動list
-    private void Position(SteamVR_Action_Vector2 fromAction, SteamVR_Input_Sources fromSource, Vector2 axis, Vector2 delta)
+    
+
+    
+
+    private void fuck()
     {
-        if (axis.x > 0.5f)
+        if (press.GetStateDown(SteamVR_Input_Sources.RightHand))
         {
-            AxisX = -1;
-        }
-        else if (axis.x < -0.5f)
-        {
-            AxisX = 1;
+            if (touchPos.axis.x < 0 && now > 0)
+            {
+                transform.position += new Vector3(20, 0, 0);
+                now--;
+            }
+
+            //不是最後一台
+            else if (touchPos.axis.x > 0 && now < vs.Length - 2)
+            {
+                transform.position -= new Vector3(20, 0, 0);
+                now++;
+            }
+
+            if (now <= 0)
+            {
+                lArrow.SetActive(false);
+                rArrow.SetActive(true);
+            }
+            else if (now >= vs.Length - 2)
+            {
+                lArrow.SetActive(true);
+                rArrow.SetActive(false);
+            }
+            else
+            {
+                lArrow.SetActive(true);
+                rArrow.SetActive(true);
+            }
+
+            currentObject = transform.GetChild(now).gameObject;
+            if (lastObject != null)
+            {
+                lastObject.GetComponent<Outline>().enabled = false;
+                lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+            currentObject.GetComponent<Outline>().enabled = true;
+            string[] split = currentObject.name.Split('(');
+            gameManager.CarName = split[0];
+            lastObject = currentObject;
         }
     }
-
-    private void PressRelease(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
-    {
-        //可往右?
-        if (AxisX > 0 && now > 0)
-        {
-            transform.position += new Vector3(20, 0, 0);
-            now--;
-        }
-
-        //可往左?
-        else if (AxisX < 0 && now < vs.Length-2)
-        {
-            lArrow.SetActive(true);
-            rArrow.SetActive(true);
-            transform.position -= new Vector3(20, 0, 0);
-            now++;
-        }
-        
-        if(now == 0)
-        {
-            lArrow.SetActive(false);
-            rArrow.SetActive(true);
-        }
-        else if(now == vs.Length - 2)
-        {
-            lArrow.SetActive(true);
-            rArrow.SetActive(false);
-        }
-        else
-        {
-            lArrow.SetActive(true);
-            rArrow.SetActive(true);
-        }
-
-        print("now" + now);
-        currentObject = transform.GetChild(now).gameObject;
-        if (lastObject != null)
-        {
-            lastObject.GetComponent<Outline>().enabled = false;
-            lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
-        currentObject.GetComponent<Outline>().enabled = true;
-        string[] split = currentObject.name.Split('(');
-        gameManager.CarName = split[0];
-        print(gameManager.getName());
-        lastObject = currentObject;
-    }
-
-    //private void SelectCar()
-    //{
-    //    if (right.GetComponent<Control>().GetRGrab())
-    //    {
-    //        currentObject = right.GetComponent<Control>().hit.collider.gameObject;
-    //        if (right.GetComponent<Control>().bHit && !currentObject.CompareTag("scene"))
-    //        {
-    //            if(lastObject != null)
-    //            {
-    //                lastObject.GetComponent<Outline>().enabled = false;
-    //                lastObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-    //            }
-    //            currentObject.GetComponent<Outline>().enabled = true;
-    //            string[] split = currentObject.name.Split('(');
-    //            gameManager.CarName = split[0];
-    //            print(gameManager.getName());
-    //            lastObject = currentObject;
-
-    //        }
-    //    }
-    //}
-
 
 }
