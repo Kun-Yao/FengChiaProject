@@ -26,7 +26,7 @@ public class CheckPoint : MonoBehaviour
 
             if (GM.GetComponent<Lap>().points.Count <= 0)
             {
-                print("Finish");
+                GameManager.PlayFF7();
                 other.GetComponent<CarController>().enabled = false;
                 other.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 finished.SetActive(true);

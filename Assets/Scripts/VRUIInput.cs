@@ -23,8 +23,9 @@ public class VRUIInput : MonoBehaviour
         var button = e.target.GetComponent<Button>();
         if (button != null)
         {
-            button.Select();
+            //button.Select();
             e.target.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+            ButtonManager.PlayButton();
             Debug.Log("HandlePointerIn", e.target.gameObject);
         }
     }
@@ -36,7 +37,7 @@ public class VRUIInput : MonoBehaviour
         var button = e.target.GetComponent<Button>();
         if (button != null)
         {
-            EventSystem.current.SetSelectedGameObject(null);
+            //EventSystem.current.SetSelectedGameObject(null);
             e.target.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
             Debug.Log("HandlePointerOut", e.target.gameObject);
         }

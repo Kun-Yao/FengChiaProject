@@ -58,7 +58,6 @@ public class ButtonEvents : MonoBehaviour
                 }
                 else if (currentObject.CompareTag("save"))
                 {
-                    print(currentObject.name);
                     if (engine != null)
                     {
                         engine.GetComponent<MeshRenderer>().enabled = false;

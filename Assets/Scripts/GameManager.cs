@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,18 +11,53 @@ public class GameManager : MonoBehaviour
     public int relifePoint;
     private bool[] isEmpty = new bool[6];
 
+    public static AudioClip BackSound;
+    public static AudioClip FF;
+    static AudioSource audioSrc;
+    private bool Begin = false;
+
+
+
     // Start is called before the first frame update
     void Awake()
     {
         if(instance == null)
         {
             instance = this;
+            if (!Begin)
+            {
+                BackSound = Resources.Load<AudioClip>("Sounds/back");
+                audioSrc = GetComponent<AudioSource>();
+                audioSrc.clip = BackSound;
+                audioSrc.loop = true;
+                audioSrc.volume = 0.5f;
+                audioSrc.Play();
+                Begin = true;
+            }
             DontDestroyOnLoad(this);
         }
         else if(this != instance)
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "Game" && Begin)
+        {
+            audioSrc.Stop();
+            Begin = false;
+        }
+        else if(SceneManager.GetActiveScene().name != "Game" && !Begin)
+        {
+            audioSrc.clip = BackSound;
+            audioSrc.loop = true;
+            audioSrc.volume = 0.5f;
+            audioSrc.Play();
+            Begin = true;
+        }
+        
     }
 
     public void setName(string Name)
@@ -63,5 +99,14 @@ public class GameManager : MonoBehaviour
         newG.GetComponent<CarController>().enabled = true;
         newG.GetComponent<Rigidbody>().useGravity = true;
         canMove = true;
+    }
+
+    public static void PlayFF7()
+    {
+        FF = Resources.Load<AudioClip>("Sounds/FF7");
+        audioSrc.clip = FF;
+        audioSrc.volume = 1.0f;
+        audioSrc.loop = false;
+        audioSrc.Play();
     }
 }

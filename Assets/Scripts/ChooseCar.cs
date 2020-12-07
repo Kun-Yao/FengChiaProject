@@ -91,18 +91,22 @@ public class ChooseCar : MonoBehaviour
     {
         if (press.GetStateDown(SteamVR_Input_Sources.RightHand))
         {
+            //不是第一台
             if (touchPos.axis.x < 0 && now > 0)
             {
+                ButtonManager.PlayButton();
                 transform.position += new Vector3(20, 0, 0);
                 now--;
             }
-
             //不是最後一台
             else if (touchPos.axis.x > 0 && now < vs.Length - 2)
             {
+                ButtonManager.PlayButton();
                 transform.position -= new Vector3(20, 0, 0);
                 now++;
             }
+        
+
 
             if (now <= 0)
             {
