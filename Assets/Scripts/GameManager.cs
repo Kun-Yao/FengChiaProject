@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
         {
             audioSrc.clip = BackSound;
             audioSrc.loop = true;
-            audioSrc.volume = 0.5f;
+            audioSrc.volume = 0.7f;
             audioSrc.Play();
             Begin = true;
         }

@@ -18,6 +18,7 @@ public class BuildBlock : MonoBehaviour
 
     public static GameObject currentObject;
 
+    public static int mass = 0;
     void Awake()
     {
         newBlock = blocks[1];
@@ -60,6 +61,7 @@ public class BuildBlock : MonoBehaviour
 
                     block = Instantiate(newBlock, blockPos, Quaternion.identity);
                     block.transform.parent = this.transform;
+                    mass += 5;
                 }
             }
         }
@@ -72,7 +74,10 @@ public class BuildBlock : MonoBehaviour
                 {
                     block = left.GetComponent<Control>().hit.collider.gameObject;
                     if (block != blocks[0])
+                    {
                         Destroy(block);
+                        mass -= 5;
+                    }
                 }
             }
         }

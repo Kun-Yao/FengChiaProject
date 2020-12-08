@@ -18,15 +18,10 @@ public class SoundManager : MonoBehaviour
 
     public static void playSound(float volume)
     {
-        audioSrc.volume = volume * 0.5f;
+        audioSrc.volume = volume * 0.4f;
         if (!audioSrc.isPlaying)
-        //audioSrc.loop = true;
             audioSrc.Play();
     }
-
-    public static void setVol(float volume)
-    {
-        audioSrc.volume = volume;
-    }
+   
     
 }
