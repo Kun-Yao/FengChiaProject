@@ -326,8 +326,8 @@ public class CarController : MonoBehaviour
         RaycastHit leftHit;
 
         //laser是否接觸地面
-        Physics.Raycast(transform.position + transform.forward, -transform.up, out frontHit);
-        Physics.Raycast(transform.position + -transform.forward, -transform.up, out rearHit);
+        Physics.Raycast(transform.position + transform.forward, Vector3.down, out frontHit);
+        Physics.Raycast(transform.position + -transform.forward, Vector3.down, out rearHit);
         Physics.Raycast(transform.position + transform.right, Vector3.down, out rightHit);
         Physics.Raycast(transform.position + -transform.right, Vector3.down, out leftHit);
 
@@ -344,14 +344,14 @@ public class CarController : MonoBehaviour
         }
 
         float deltav = frontHit.distance - rearHit.distance;
-        float deltah = rightHit.distance - leftHit.distance;
-        if (Mathf.Abs(deltav) > 0.8f)
+        float deltah = leftHit.distance - rightHit.distance;
+        if (Mathf.Abs(deltav) > 0.1f)
         {
-            transform.Rotate(Mathf.Atan(deltav / 2), 0, 0);
+            transform.Rotate(Mathf.Asin(deltav / 2), 0, 0);
         }
-        if (Mathf.Abs(deltah) > 0.8f)
+        if (Mathf.Abs(deltah) > 0.1f)
         {
-            transform.Rotate(0, 0, Mathf.Atan(deltah / 2));
+            transform.Rotate(0, 0, Mathf.Asin(deltah / 2));
         }
 
 
